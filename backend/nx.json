@@ -1,0 +1,94 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "lms",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "workspaceLayout": {
+    "appsDir": ".",
+    "libsDir": "."
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    }
+  },
+  "projects": {
+    "api-gateway": {
+      "root": "api-gateway",
+      "projectType": "application",
+      "targets": {}
+    },
+    "auth-service": {
+      "root": "auth-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "user-service": {
+      "root": "user-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "course-service": {
+      "root": "course-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "content-service": {
+      "root": "content-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "video-service": {
+      "root": "video-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "enrollment-service": {
+      "root": "enrollment-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "payment-service": {
+      "root": "payment-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "progress-service": {
+      "root": "progress-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "review-service": {
+      "root": "review-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "notification-service": {
+      "root": "notification-service",
+      "projectType": "application",
+      "targets": {}
+    },
+    "common": {
+      "root": "common",
+      "projectType": "library",
+      "targets": {}
+    },
+    "database": {
+      "root": "database",
+      "projectType": "library",
+      "targets": {}
+    },
+    "types": {
+      "root": "types",
+      "projectType": "library",
+      "targets": {}
+    }
+  }
+}

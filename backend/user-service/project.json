@@ -1,0 +1,37 @@
+{
+  "name": "user-service",
+  "projectType": "application",
+  "root": "user-service",
+  "sourceRoot": "user-service/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/user-service",
+        "main": "user-service/src/main.ts",
+        "tsConfig": "user-service/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "user-service:build",
+        "watch": true
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No lint configured for user-service\""
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No tests configured for user-service\""
+      }
+    }
+  }
+}

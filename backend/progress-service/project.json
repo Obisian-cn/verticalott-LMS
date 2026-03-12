@@ -1,0 +1,37 @@
+{
+  "name": "progress-service",
+  "projectType": "application",
+  "root": "progress-service",
+  "sourceRoot": "progress-service/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/progress-service",
+        "main": "progress-service/src/main.ts",
+        "tsConfig": "progress-service/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "progress-service:build",
+        "watch": true
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No lint configured for progress-service\""
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No tests configured for progress-service\""
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "api-gateway",
+  "projectType": "application",
+  "root": "api-gateway",
+  "sourceRoot": "api-gateway/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/api-gateway",
+        "main": "api-gateway/src/main.ts",
+        "tsConfig": "api-gateway/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nx/node:node",
+      "options": {
+        "buildTarget": "api-gateway:build",
+        "watch": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "command": "echo \"No lint configured for api-gateway\""
+      }
+    },
+    "test": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "command": "echo \"No tests configured for api-gateway\""
+      }
+    }
+  }
+}

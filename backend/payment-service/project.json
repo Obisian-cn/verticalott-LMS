@@ -1,0 +1,37 @@
+{
+  "name": "payment-service",
+  "projectType": "application",
+  "root": "payment-service",
+  "sourceRoot": "payment-service/src",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/payment-service",
+        "main": "payment-service/src/main.ts",
+        "tsConfig": "payment-service/tsconfig.app.json",
+        "assets": []
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "payment-service:build",
+        "watch": true
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No lint configured for payment-service\""
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"No tests configured for payment-service\""
+      }
+    }
+  }
+}
