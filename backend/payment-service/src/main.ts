@@ -1,5 +1,56 @@
+import "./env";
 import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import { sequelize } from "@lms/database";
+
+import { config } from "./config";
+import { logger } from "./utils/logger";
+import { AppError } from "./utils/AppError";
+import { errorHandler } from "./middlewares/error";
+import paymentRoutes from "./routes/payment.routes";
+
 const app = express();
-const port = 3007;
-app.get("/", (req, res) => res.json({ service: "payment-service", status: "ok" }));
-app.listen(port, () => console.log("payment-service listening on port 3007"));
+
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message) => logger.info(message.trim()),
+    },
+  })
+);
+
+app.get("/", (req, res) => {
+  res.json({ service: "payment-service" });
+});
+
+app.use("/payments", paymentRoutes);
+
+app.use((req, res, next) => {
+  next(new AppError(`Route ${req.method} ${req.path} not found`, 404));
+});
+
+app.use(errorHandler);
+
+const port = config.port;
+
+sequelize
+  .authenticate()
+  .then(() => {
+    logger.info("Database connected successfully");
+    return sequelize.sync(); 
+  })
+  .then(() => {
+    app.listen(port, () => {
+      logger.info(`Payment service listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    logger.error("Failed to start payment service", { error: err });
+    process.exit(1);
+  });
