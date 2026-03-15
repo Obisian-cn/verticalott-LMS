@@ -1,12 +1,14 @@
 {
   "name": "content-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "content-service",
   "sourceRoot": "content-service/src",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/content-service",
         "main": "content-service/src/main.ts",
@@ -15,10 +17,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "content-service:build",
-        "watch": true
+        "watch": true,
+        "inspect": false,
+        "port": 9234
       }
     },
     "lint": {

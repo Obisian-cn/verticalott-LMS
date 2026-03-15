@@ -1,12 +1,14 @@
 {
   "name": "database",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "database",
   "sourceRoot": "database/src",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["dist/database"],
+      "outputs": [
+        "{workspaceRoot}/dist/database"
+      ],
       "options": {
         "command": "tsc -p database/tsconfig.app.json"
       }

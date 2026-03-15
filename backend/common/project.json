@@ -1,12 +1,14 @@
 {
   "name": "common",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "common",
   "sourceRoot": "common/src",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["dist/common"],
+      "outputs": [
+        "{workspaceRoot}/dist/common"
+      ],
       "options": {
         "command": "tsc -p common/tsconfig.app.json"
       }

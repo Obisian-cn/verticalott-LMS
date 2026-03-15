@@ -1,12 +1,14 @@
 {
   "name": "progress-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "progress-service",
   "sourceRoot": "progress-service/src",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/progress-service",
         "main": "progress-service/src/main.ts",
@@ -15,10 +17,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "progress-service:build",
-        "watch": true
+        "watch": true,
+        "inspect": false,
+        "port": 9238
       }
     },
     "lint": {

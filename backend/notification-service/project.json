@@ -1,12 +1,14 @@
 {
   "name": "notification-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "notification-service",
   "sourceRoot": "notification-service/src",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/notification-service",
         "main": "notification-service/src/main.ts",
@@ -15,10 +17,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "notification-service:build",
-        "watch": true
+        "watch": true,
+        "inspect": false,
+        "port": 9240
       }
     },
     "lint": {

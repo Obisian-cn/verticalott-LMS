@@ -7,7 +7,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { logger, AppError, fail, authenticate } from "@lms/common/src";
+import { logger, AppError, fail, authenticate } from "@lms/common";
 
 const app = express();
 

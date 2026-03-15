@@ -1,12 +1,14 @@
 {
   "name": "auth-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "auth-service",
   "sourceRoot": "auth-service/src",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/auth-service",
         "main": "auth-service/src/main.ts",
@@ -15,10 +17,12 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "auth-service:build",
-        "watch": true
+        "watch": true,
+        "inspect": false,
+        "port": 9231
       }
     },
     "lint": {

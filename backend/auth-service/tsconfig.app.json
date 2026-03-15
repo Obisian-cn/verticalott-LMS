@@ -2,7 +2,9 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../dist/auth-service",
-    "rootDir": "src"
+    "rootDir": ".."
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

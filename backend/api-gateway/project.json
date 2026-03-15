@@ -1,12 +1,14 @@
 {
   "name": "api-gateway",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "api-gateway",
   "sourceRoot": "api-gateway/src",
   "targets": {
     "build": {
-      "executor": "@nx/node:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/api-gateway",
         "main": "api-gateway/src/main.ts",
@@ -15,10 +17,12 @@
       }
     },
     "serve": {
-      "executor": "@nx/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-gateway:build",
-        "watch": true
+        "watch": true,
+        "inspect": false,
+        "port": 9230
       }
     },
     "lint": {

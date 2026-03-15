@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
@@ -11,13 +13,38 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "baseUrl": ".",
+    // "paths": {
+    //   "@lms/common/*": ["common/src/*"],
+    //   "@lms/database/*": ["database/src/*"],
+    //   "@lms/types/*": ["types/src/*"]
+    // }
     "paths": {
-      "@lms/common/*": ["common/src/*"],
-      "@lms/database/*": ["database/src/*"],
-      "@lms/types/*": ["types/src/*"]
+      "@lms/common": [
+        "common/src/index.ts"
+      ],
+      "@lms/common/*": [
+        "common/src/*"
+      ],
+      "@lms/database": [
+        "database/src/index.ts"
+      ],
+      "@lms/database/*": [
+        "database/src/*"
+      ],
+      "@lms/types": [
+        "types/src/index.ts"
+      ],
+      "@lms/types/*": [
+        "types/src/*"
+      ]
     }
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
