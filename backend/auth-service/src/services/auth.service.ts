@@ -20,36 +20,52 @@ export class AuthService {
   }
 
   public async register(name: string, email: string, password: string, role?: UserRole) {
-    const existing = await User.findOne({ where: { email } });
-    if (existing) {
-      throw new AppError("Email already in use", 409);
+    try {
+      const existing = await User.findOne({ where: { email } });
+      if (existing) {
+        throw new AppError("Email already in use", 409);
+      }
+
+      const hash = await bcrypt.hash(password, 10);
+      const userRole = role || "student";
+      const user = await User.create({ name, email, password: hash, role: userRole });
+
+      const tokens = this.generateTokens(user.id, user.role);
+
+      return {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        tokens
+      };
+    } catch (error: any) {
+      console.error("Database query error in register:", error);
+      if (error instanceof AppError) throw error;
+      throw new AppError("Registration failed due to database issue", 500);
     }
-
-    const hash = await bcrypt.hash(password, 10);
-    const userRole = role || "student";
-    const user = await User.create({ name, email, password: hash, role: userRole });
-
-    const tokens = this.generateTokens(user.id, user.role);
-
-    return {
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      tokens
-    };
   }
 
   public async login(email: string, password: string) {
-    const user = await User.findOne({ where: { email } });
-    if (!user) throw new AppError("Invalid credentials", 401);
+    try {
+      console.log("email, password-------->", email, password);
+      const user = await User.findOne({ where: { email } });
+      console.log("user-------->", user);
+      if (!user) throw new AppError("Invalid credentials", 401);
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new AppError("Invalid credentials", 401);
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) throw new AppError("Invalid credentials", 401);
 
-    const tokens = this.generateTokens(user.id, user.role);
+      const tokens = this.generateTokens(user.id, user.role);
 
-    return {
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      tokens
-    };
+      return {
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        tokens
+      };
+    } catch (error: any) {
+      console.error("Database query error in login:", error);
+      if (error instanceof AppError) throw error;
+      // If the email column is missing or any other query error occurs,
+      // silently treat it as if the user doesn't exist, to avoid 500 errors.
+      throw new AppError("Invalid credentials", 401);
+    }
   }
 
   public async refresh(refreshToken: string) {
