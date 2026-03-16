@@ -2,8 +2,9 @@ import { Course } from "../models";
 import { AppError } from "../utils/AppError";
 
 export class CourseService {
-  public async createCourse(instructorId: string, data: any) {
-    const course = await Course.create({ ...data, instructorId });
+  public async createCourse(requestUserId: string, data: any) {
+    const finalInstructorId = data.instructorId || requestUserId;
+    const course = await Course.create({ ...data, instructorId: finalInstructorId });
     return course;
   }
 

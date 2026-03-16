@@ -3,8 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import { Search, Star, Clock, Users, BookOpen, Filter } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
     queryKey: ['courses'],
@@ -73,7 +76,11 @@ export default function Courses() {
         ) : filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCourses.map((course: any) => (
-              <div key={course.id} className="glass rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col cursor-pointer bg-white">
+              <div 
+                key={course.id} 
+                onClick={() => navigate(`/courses/${course.id}`)}
+                className="glass rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col cursor-pointer bg-white"
+              >
                 <div className="h-44 relative overflow-hidden bg-slate-100">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 flex items-center justify-center opacity-30">

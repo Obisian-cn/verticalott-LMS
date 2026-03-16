@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, LogOut, LayoutDashboard, Compass } from 'lucide-react';
+import { BookOpen, LogOut, LayoutDashboard, Compass, Settings } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
 
@@ -52,6 +52,9 @@ export default function Navbar() {
               <>
                 <NavLink to="/dashboard" icon={LayoutDashboard}>Dashboard</NavLink>
                 <NavLink to="/courses" icon={Compass}>Explore</NavLink>
+                {(user?.role === 'admin' || user?.role === 'instructor') && (
+                  <NavLink to="/admin" icon={Settings}>Instructor</NavLink>
+                )}
                 
                 <div className="h-6 w-px bg-slate-200 mx-2" />
                 

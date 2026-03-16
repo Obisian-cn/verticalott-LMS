@@ -19,8 +19,7 @@ type CourseCreationAttributes = Optional<CourseAttributes, "id" | "status">;
 
 export class Course
   extends Model<CourseAttributes, CourseCreationAttributes>
-  implements CourseAttributes
-{
+  implements CourseAttributes {
   public id!: string;
   public title!: string;
   public description!: string;

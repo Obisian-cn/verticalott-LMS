@@ -29,9 +29,10 @@ app.get("/", (req, res) => {
   res.json({ service: "content-service" });
 });
 
-// Since the gateway proxy might mount at /content or /content-service, we map routes
-// Actually, let's just use the root router or / 
+// Better to just mount the router at root since it defines full paths
 app.use("/", contentRoutes);
+import lessonRoutes from "./modules/lessons/lesson.routes";
+app.use("/", lessonRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.method} ${req.path} not found`, 404));

@@ -59,5 +59,50 @@ export const apiMethods = {
   updateProgress: async (data: { lessonId: string, completed: boolean }) => {
     const res = await api.post('/progress', data);
     return res.data;
+  },
+
+  // Admin / Instructor missing methods
+  createCourse: async (data: any) => {
+    const res = await api.post('/courses', data);
+    return res.data;
+  },
+  updateCourse: async (id: string, data: any) => {
+    const res = await api.put(`/courses/${id}`, data);
+    return res.data;
+  },
+  deleteCourse: async (id: string) => {
+    const res = await api.delete(`/courses/${id}`);
+    return res.data;
+  },
+  createSection: async (courseId: string, data: any) => {
+    const res = await api.post(`/content/courses/${courseId}/sections`, data);
+    return res.data;
+  },
+  createLesson: async (sectionId: string, data: any) => {
+    const res = await api.post(`/content/sections/${sectionId}/lessons`, data);
+    return res.data;
+  },
+  createMultipartLesson: async (sectionId: string, formData: FormData) => {
+    const res = await api.post(`/sections/${sectionId}/lessons`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  },
+  getCurriculum: async (courseId: string) => {
+    const res = await api.get(`/courses/${courseId}/curriculum`);
+    return res.data;
+  },
+  uploadVideo: async (lessonId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('lessonId', lessonId);
+    const res = await api.post('/videos/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  },
+  enroll: async (courseId: string) => {
+    const res = await api.post('/enrollments', { courseId });
+    return res.data;
   }
 };

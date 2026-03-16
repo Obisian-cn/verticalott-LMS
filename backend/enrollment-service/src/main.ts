@@ -29,11 +29,7 @@ app.get("/", (req, res) => {
   res.json({ service: "enrollment-service" });
 });
 
-// Based on requirements, endpoint: POST /enrollments, GET /users/:id/enrollments
-// We mount at root to support /users routes as well
-app.post("/enrollments", enrollmentRoutes); // Mount post /enrollments
-// Better to just mount the router at root since it defines full paths
-app.use("/", enrollmentRoutes);
+app.use("/enrollments", enrollmentRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.method} ${req.path} not found`, 404));

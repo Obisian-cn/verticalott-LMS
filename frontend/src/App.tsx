@@ -8,6 +8,13 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Courses from './pages/Courses';
 import Navbar from './components/Navbar';
+import CourseDetails from './pages/CourseDetails';
+import CoursePlayer from './pages/CoursePlayer';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminCourseCreate from './pages/AdminCourseCreate';
+import AdminCourseEdit from './pages/AdminCourseEdit';
+import AdminCoursesList from './features/admin/courses/AdminCoursesList';
+import AdminCourseBuilder from './features/admin/courses/AdminCourseBuilder';
 
 const PrivateRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -38,6 +45,13 @@ function App() {
             <Route element={<PrivateRoutes />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetails />} />
+              <Route path="/learn/:courseId" element={<CoursePlayer />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/courses" element={<AdminCoursesList />} />
+              <Route path="/admin/courses/create" element={<AdminCourseCreate />} />
+              <Route path="/admin/courses/:id/edit" element={<AdminCourseEdit />} />
+              <Route path="/admin/courses/:courseId/builder" element={<AdminCourseBuilder />} />
             </Route>
             
             <Route path="/" element={<Navigate to="/dashboard" />} />

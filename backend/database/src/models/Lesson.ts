@@ -8,11 +8,16 @@ export interface LessonAttributes {
   title: string;
   type: "video" | "article" | "quiz";
   content?: string | null;
+  description?: string | null;
   videoId?: string | null;
+  videoPlaybackId?: string | null;
+  videoUrl?: string | null;
+  duration?: number | null;
+  status?: string | null;
   order: number;
 }
 
-type LessonCreationAttributes = Optional<LessonAttributes, "id" | "content" | "videoId">;
+type LessonCreationAttributes = Optional<LessonAttributes, "id" | "content" | "description" | "videoId" | "videoPlaybackId" | "videoUrl" | "duration" | "status">;
 
 export class Lesson
   extends Model<LessonAttributes, LessonCreationAttributes>
@@ -23,7 +28,12 @@ export class Lesson
   public title!: string;
   public type!: "video" | "article" | "quiz";
   public content!: string | null;
+  public description!: string | null;
   public videoId!: string | null;
+  public videoPlaybackId!: string | null;
+  public videoUrl!: string | null;
+  public duration!: number | null;
+  public status!: string | null;
   public order!: number;
   
   public readonly createdAt!: Date;
@@ -56,10 +66,33 @@ Lesson.init(
       type: DataTypes.TEXT,
       allowNull: true
     },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     videoId: {
       type: DataTypes.STRING,
       allowNull: true,
       field: "video_id"
+    },
+    videoPlaybackId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "video_playback_id"
+    },
+    videoUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "video_url"
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "pending"
     },
     order: {
       type: DataTypes.INTEGER,

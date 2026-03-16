@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { apiMethods } from '../lib/api';
 import { BookOpen, Trophy, Clock, ArrowRight, PlayCircle, Compass } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   // Fetch enrollments
   const { data, isLoading } = useQuery({
@@ -109,7 +110,10 @@ export default function Dashboard() {
                         style={{ width: `${enrollment.progress || 0}%` }}
                       ></div>
                     </div>
-                    <button className="w-full flex items-center justify-center px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 hover:border-indigo-300 hover:text-indigo-600 transition-all shadow-sm group/btn">
+                    <button 
+                      onClick={() => navigate('/learn/' + enrollment.course?.id)}
+                      className="w-full flex items-center justify-center px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 hover:border-indigo-300 hover:text-indigo-600 transition-all shadow-sm group/btn"
+                    >
                       <PlayCircle className="w-4 h-4 mr-2 group-hover/btn:scale-110 group-hover/btn:text-indigo-600 transition-transform" />
                       Continue Learning
                     </button>
