@@ -12,7 +12,7 @@ export class EnrollmentService {
     const enrollment = await Enrollment.create({
       userId,
       courseId,
-      paymentId
+      // paymentId
     });
 
     return enrollment;

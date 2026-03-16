@@ -1,4 +1,4 @@
-import "./env";
+// import "./env";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -47,7 +47,7 @@ sequelize
   .authenticate()
   .then(() => {
     logger.info("Database connected successfully");
-    return sequelize.sync(); 
+    return sequelize.sync();
   })
   .then(() => {
     app.listen(port, () => {

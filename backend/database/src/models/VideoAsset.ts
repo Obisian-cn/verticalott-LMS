@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../sequelize";
 import { Lecture } from "./Lecture";
+import { Lesson } from "./Lesson";
 
 export type VideoStatus = "pending" | "ready" | "errored";
 
@@ -23,6 +24,7 @@ export class VideoAsset
   public muxAssetId!: string;
   public playbackId!: string;
   public status!: VideoStatus;
+  public readonly Lesson?: Lesson;
 }
 
 VideoAsset.init(
@@ -57,4 +59,5 @@ VideoAsset.init(
 );
 
 VideoAsset.belongsTo(Lecture, { foreignKey: "lectureId", as: "lecture" });
+VideoAsset.hasOne(Lesson, { foreignKey: "videoId", as: "Lesson" });
 

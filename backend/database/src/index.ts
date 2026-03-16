@@ -4,6 +4,7 @@ export * from "./models/Category";
 export * from "./models/Course";
 export * from "./models/Enrollment";
 export * from "./models/Lecture";
+export * from "./models/Lesson";
 export * from "./models/Progress";
 export * from "./models/Review";
 export * from "./models/Section";

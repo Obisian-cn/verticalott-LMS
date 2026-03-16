@@ -19,6 +19,7 @@ export class Section
   public courseId!: string;
   public title!: string;
   public order!: number;
+  public readonly Course?: Course;
 }
 
 Section.init(
@@ -47,5 +48,5 @@ Section.init(
   }
 );
 
-Section.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+Section.belongsTo(Course, { foreignKey: "courseId", as: "Course" });
 
