@@ -9,3 +9,7 @@ export * from "./models/Progress";
 export * from "./models/Review";
 export * from "./models/Section";
 export * from "./models/VideoAsset";
+
+import { initAssociations } from "./models/associations";
+
+initAssociations();

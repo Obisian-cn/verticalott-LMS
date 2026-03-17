@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // Fetch enrollments
   const { data, isLoading } = useQuery({
     queryKey: ['enrollments', user?.id],
@@ -16,7 +16,7 @@ export default function Dashboard() {
     enabled: !!user?.id
   });
 
-  const enrollments = data?.data?.enrollments || [];
+  const enrollments = data?.data || [];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
@@ -24,7 +24,7 @@ export default function Dashboard() {
       <div className="glass rounded-[2rem] p-8 sm:p-10 relative overflow-hidden shadow-xl shadow-indigo-900/5 border-t border-l border-white">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/20 to-purple-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-cyan-500/10 to-blue-500/10 blur-2xl rounded-full -translate-x-1/2 translate-y-1/2" />
-        
+
         <div className="relative z-10">
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
             Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">{user?.name?.split(' ')[0]}</span>!
@@ -90,7 +90,7 @@ export default function Dashboard() {
                     {enrollment.course?.category || 'General'}
                   </div>
                 </div>
-                
+
                 <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-900 line-clamp-2 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
                     {enrollment.course?.title || 'Untitled Course'}
@@ -98,19 +98,19 @@ export default function Dashboard() {
                   <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-1">
                     {enrollment.course?.description || 'Continue your learning journey with this course.'}
                   </p>
-                  
+
                   <div className="mt-auto">
                     <div className="flex justify-between text-xs font-semibold text-slate-600 mb-2">
                       <span>Progress</span>
                       <span>{Math.round(enrollment.progress || 0)}%</span>
                     </div>
                     <div className="w-full bg-slate-100 rounded-full h-2.5 mb-4 shadow-inner overflow-hidden">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-indigo-500 to-violet-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
                         style={{ width: `${enrollment.progress || 0}%` }}
                       ></div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => navigate('/learn/' + enrollment.course?.id)}
                       className="w-full flex items-center justify-center px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 hover:border-indigo-300 hover:text-indigo-600 transition-all shadow-sm group/btn"
                     >

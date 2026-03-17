@@ -13,9 +13,9 @@ export default function AdminDashboard() {
     queryFn: () => apiMethods.getCourses()
   });
 
-  const courses = data?.data?.courses || [];
+  const courses = data?.data || [];
   // Filter courses by the instructor's ID
-  const myCourses = user?.role === 'admin' ? courses : courses.filter((c: any) => c.instructorId === user?.id);
+  const myCourses = user?.role === 'admin' ? courses : courses?.filter((c: any) => c.instructorId === user?.id);
 
   if (user?.role !== 'admin' && user?.role !== 'instructor') {
     return (
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="glass rounded-[2rem] p-8 sm:p-10 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between text-left">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-bl from-teal-400/20 to-emerald-400/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
-        
+
         <div className="relative z-10 w-full max-w-3xl">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
             Instructor <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600">Dashboard</span>
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="relative z-10 mt-6 md:mt-0 flex shrink-0">
-          <Link 
+          <Link
             to="/admin/courses/create"
             className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-2xl font-bold shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 hover:-translate-y-1 transition-all"
           >
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
       {/* Course List */}
       <div>
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-6">Manage Your Courses</h2>
-        
+
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map(i => <div key={i} className="glass h-24 rounded-2xl bg-white/40 animate-pulse" />)}
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-none border-slate-100">
                   <Link
                     to={`/admin/courses/${course.id}/edit`}
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
             </div>
             <h3 className="text-2xl font-bold text-slate-900 mb-2">You haven't created any courses yet</h3>
             <p className="text-slate-500 max-w-md mx-auto mb-8">Start sharing your knowledge with the world by building your first interactive course.</p>
-            <Link 
+            <Link
               to="/admin/courses/create"
               className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-teal-500 text-white rounded-xl font-bold hover:bg-teal-600 hover:scale-105 active:scale-95 transition-all shadow-lg"
             >

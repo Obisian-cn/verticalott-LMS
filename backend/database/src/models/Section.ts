@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../sequelize";
 import { Course } from "./Course";
+import { Lesson } from "./Lesson";
 
 export interface SectionAttributes {
   id: string;
@@ -13,8 +14,7 @@ type SectionCreationAttributes = Optional<SectionAttributes, "id">;
 
 export class Section
   extends Model<SectionAttributes, SectionCreationAttributes>
-  implements SectionAttributes
-{
+  implements SectionAttributes {
   public id!: string;
   public courseId!: string;
   public title!: string;
@@ -47,6 +47,3 @@ Section.init(
     tableName: "sections"
   }
 );
-
-Section.belongsTo(Course, { foreignKey: "courseId", as: "Course" });
-

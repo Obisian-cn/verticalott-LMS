@@ -46,7 +46,7 @@ export const apiMethods = {
     const res = await api.get(`/content/courses/${id}/sections`);
     return res.data; // Includes sections and lessons
   },
-  
+
   // User features
   getEnrollments: async (userId: string) => {
     const res = await api.get(`/enrollments/users/${userId}/enrollments`);
@@ -75,7 +75,9 @@ export const apiMethods = {
     return res.data;
   },
   createSection: async (courseId: string, data: any) => {
-    const res = await api.post(`/content/courses/${courseId}/sections`, data);
+    // const res = await api.post(`/content/courses/${courseId}/sections`, data);
+    const res = await api.post(`/content/sections`, data);
+
     return res.data;
   },
   createLesson: async (sectionId: string, data: any) => {
@@ -83,13 +85,13 @@ export const apiMethods = {
     return res.data;
   },
   createMultipartLesson: async (sectionId: string, formData: FormData) => {
-    const res = await api.post(`/sections/${sectionId}/lessons`, formData, {
+    const res = await api.post(`/lesson/${sectionId}/lessons`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return res.data;
   },
   getCurriculum: async (courseId: string) => {
-    const res = await api.get(`/courses/${courseId}/curriculum`);
+    const res = await api.get(`/content/courses/${courseId}/sections`);
     return res.data;
   },
   uploadVideo: async (lessonId: string, file: File) => {

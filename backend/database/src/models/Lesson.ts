@@ -21,8 +21,7 @@ type LessonCreationAttributes = Optional<LessonAttributes, "id" | "content" | "d
 
 export class Lesson
   extends Model<LessonAttributes, LessonCreationAttributes>
-  implements LessonAttributes
-{
+  implements LessonAttributes {
   public id!: string;
   public sectionId!: string;
   public title!: string;
@@ -35,7 +34,7 @@ export class Lesson
   public duration!: number | null;
   public status!: string | null;
   public order!: number;
-  
+
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   public readonly Section?: Section;
@@ -71,7 +70,7 @@ Lesson.init(
       allowNull: true
     },
     videoId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: true,
       field: "video_id"
     },
@@ -105,5 +104,3 @@ Lesson.init(
     underscored: true
   }
 );
-
-Lesson.belongsTo(Section, { foreignKey: "sectionId", as: "Section" });

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
+import MuxPlayer from '@mux/mux-player-react';
 import { PlayCircle, CheckCircle2, Circle, FileText, HelpCircle, ChevronLeft, Award } from 'lucide-react';
 
 export default function CoursePlayer() {
@@ -98,17 +99,37 @@ export default function CoursePlayer() {
         {/* Main Video / Content display (Left) */}
         <div className="flex-1 flex flex-col overflow-y-auto bg-slate-950">
           <div className="w-full bg-black aspect-video flex-shrink-0 relative flex justify-center items-center border-b border-slate-800 shadow-2xl">
-            {activeLesson?.videoId ? (
-              // Replace this with actual Mux component if available
-              <div className="text-slate-500 flex flex-col items-center">
-                <PlayCircle className="w-20 h-20 text-teal-500/50 mb-4" />
-                <p>Mux Video Player for Asset ID: {activeLesson.videoId}</p>
-              </div>
+            {activeLesson?.videoPlaybackId ? (
+              <MuxPlayer
+                streamType="on-demand"
+                playbackId={activeLesson.videoPlaybackId}
+                metadataVideoTitle={activeLesson?.title || "Course Video"}
+                accentColor="#14b8a6"
+                className="w-full h-full object-contain"
+                onEnded={() => {
+                  if (!completedLessons[activeLesson.id]) {
+                    handleToggleComplete(activeLesson.id);
+                  }
+                }}
+              />
+            ) : activeLesson?.videoUrl ? (
+              <video 
+                controls 
+                className="w-full h-full object-contain"
+                src={activeLesson.videoUrl}
+                onEnded={() => {
+                  if (!completedLessons[activeLesson.id]) {
+                    handleToggleComplete(activeLesson.id);
+                  }
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
             ) : (
               <div className="text-slate-500 flex flex-col items-center p-12 text-center">
                 {activeLesson?.type === 'article' ? <FileText className="w-16 h-16 text-slate-600 mb-4" /> : <PlayCircle className="w-16 h-16 text-slate-600 mb-4" />}
                 <p className="text-xl font-bold text-slate-300">{activeLesson?.title || "Select a lesson"}</p>
-                <p className="text-sm mt-2 text-slate-400 max-w-md">{activeLesson?.content || "No video content provided for this lesson."}</p>
+                <p className="text-sm mt-2 text-slate-400 max-w-md">{activeLesson?.description || "No video content provided for this lesson."}</p>
               </div>
             )}
           </div>

@@ -18,7 +18,7 @@ router.post(
 
 // Lesson Flow with Video Upload (Multer middleware ensures streaming / OS disk fallback)
 router.post(
-  "/sections/:sectionId/lessons",
+  "/:sectionId/lessons",
   authenticate,
   authorize(["instructor", "admin"]),
   upload.single("video"), // handle the multipart upload

@@ -15,4 +15,5 @@ export const updateCourseSchema = Joi.object({
   price: Joi.number().min(0).optional(),
   category: Joi.string().optional(),
   thumbnail: Joi.string().uri().optional(),
+  instructorId: Joi.string().uuid().optional(),
 }).min(1);

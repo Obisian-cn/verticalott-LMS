@@ -45,7 +45,7 @@ export default function AdminCourseBuilder() {
 
   const handleCreateSection = (data: { title: string }) => {
     const sections = curriculumData?.data?.sections || [];
-    createSectionMutation.mutate({ ...data, order: sections.length + 1 });
+    createSectionMutation.mutate({ ...data, courseId, order: sections.length + 1 });
   };
 
   const handleCreateLecture = ({ sectionId, title, description, file }: any) => {
@@ -57,14 +57,14 @@ export default function AdminCourseBuilder() {
     createLectureMutation.mutate({ sectionId, formData });
   };
 
-  const sections = curriculumData?.data?.sections || [];
+  const sections = curriculumData?.data || [];
   const course = courseData?.data || {};
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12 pt-6">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             to="/admin/courses"
             className="p-2 bg-white rounded-full shadow-sm border border-slate-200 text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors"
           >
@@ -77,7 +77,7 @@ export default function AdminCourseBuilder() {
             </p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => window.open(`/courses/${courseId}`, '_blank')}
           className="flex items-center gap-2 px-6 py-2 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl font-bold hover:bg-indigo-100 transition-colors shadow-sm text-sm"
         >
@@ -92,10 +92,10 @@ export default function AdminCourseBuilder() {
           </div>
         ) : sections.length > 0 ? (
           sections.map((section: any, index: number) => (
-            <SectionItem 
-              key={section.id} 
-              section={section} 
-              index={index} 
+            <SectionItem
+              key={section.id}
+              section={section}
+              index={index}
               onAddLecture={setActiveSectionIdForLecture}
             />
           ))
@@ -108,7 +108,7 @@ export default function AdminCourseBuilder() {
         )}
 
         {/* Add Section Button */}
-        <button 
+        <button
           onClick={() => setIsSectionModalOpen(true)}
           className="w-full flex items-center justify-center p-6 bg-white border-2 border-dashed border-slate-300 rounded-[1.5rem] text-slate-500 font-bold hover:bg-slate-50 hover:text-teal-600 hover:border-teal-300 transition-colors group"
         >
@@ -118,7 +118,7 @@ export default function AdminCourseBuilder() {
       </div>
 
       {isSectionModalOpen && (
-        <AddSectionModal 
+        <AddSectionModal
           onClose={() => setIsSectionModalOpen(false)}
           onSave={handleCreateSection}
           isLoading={createSectionMutation.isPending}

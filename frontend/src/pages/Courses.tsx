@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import { Search, Star, Clock, Users, BookOpen, Filter } from 'lucide-react';
@@ -7,18 +7,27 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Courses() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 1000);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: () => apiMethods.getCourses()
   });
 
-  const courses = data?.data?.courses || [];
+  const courses = data?.data || [];
 
-  const filteredCourses = courses.filter((course: any) => 
-    course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCourses = courses.filter((course: any) =>
+    course.title?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    course.description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
 
   return (
@@ -27,7 +36,7 @@ export default function Courses() {
       <div className="glass rounded-[2rem] p-8 sm:p-10 relative overflow-hidden flex flex-col items-center text-center">
         <div className="absolute top-0 right-1/4 w-64 h-64 bg-gradient-to-bl from-teal-400/20 to-emerald-400/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-gradient-to-tr from-cyan-400/20 to-blue-500/10 blur-3xl rounded-full -translate-x-1/2 translate-y-1/2" />
-        
+
         <div className="relative z-10 w-full max-w-3xl">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
             Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-cyan-600">Courses</span>
@@ -35,7 +44,7 @@ export default function Courses() {
           <p className="mt-4 text-lg text-slate-600 font-medium">
             Discover thousands of courses from top instructors around the world.
           </p>
-          
+
           <div className="mt-8 relative max-w-2xl mx-auto flex items-center shadow-lg shadow-slate-200/50 rounded-2xl group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-500 transition-colors">
               <Search className="h-6 w-6" />
@@ -76,8 +85,8 @@ export default function Courses() {
         ) : filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCourses.map((course: any) => (
-              <div 
-                key={course.id} 
+              <div
+                key={course.id}
                 onClick={() => navigate(`/courses/${course.id}`)}
                 className="glass rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col cursor-pointer bg-white"
               >
@@ -95,12 +104,12 @@ export default function Courses() {
                     {course.category || 'Technology'}
                   </div>
                 </div>
-                
+
                 <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-900 line-clamp-2 leading-tight mb-2 group-hover:text-teal-600 transition-colors">
                     {course.title}
                   </h3>
-                  
+
                   <div className="flex items-center text-xs text-slate-500 mb-3 space-x-3">
                     <div className="flex items-center">
                       <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
@@ -138,8 +147,8 @@ export default function Courses() {
             <p className="mt-2 text-slate-500 max-w-sm mx-auto">
               We couldn't find any courses matching your search. Try different keywords or browse our categories.
             </p>
-            <button 
-              onClick={() => setSearchTerm('')} 
+            <button
+              onClick={() => setSearchTerm('')}
               className="mt-6 text-sm font-bold text-teal-600 hover:text-teal-700 underline underline-offset-4 decoration-2 decoration-teal-200 hover:decoration-teal-500 transition-all"
             >
               Clear search filters

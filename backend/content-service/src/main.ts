@@ -10,6 +10,7 @@ import { logger } from "./utils/logger";
 import { AppError } from "./utils/AppError";
 import { errorHandler } from "./middlewares/error";
 import contentRoutes from "./routes/content.routes";
+import lessonRoutes from "./modules/lessons/lesson.routes";
 
 const app = express();
 
@@ -30,9 +31,8 @@ app.get("/", (req, res) => {
 });
 
 // Better to just mount the router at root since it defines full paths
-app.use("/", contentRoutes);
-import lessonRoutes from "./modules/lessons/lesson.routes";
-app.use("/", lessonRoutes);
+app.use("/content", contentRoutes);
+app.use("/lesson", lessonRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.method} ${req.path} not found`, 404));

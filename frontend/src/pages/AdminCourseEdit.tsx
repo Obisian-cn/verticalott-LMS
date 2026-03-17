@@ -2,21 +2,17 @@ import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
-import { Save, ArrowLeft, PlusCircle, Video, FileText, HelpCircle, Layers, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Video, FileText, HelpCircle, Link as LinkIcon } from 'lucide-react';
+import AddLectureModal from '../features/admin/components/AddLectureModal';
+import AddSectionModal from '../features/admin/components/AddSectionModal';
 
 export default function AdminCourseEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
-  
-  const [newLessonData, setNewLessonData] = useState({
-    title: '',
-    type: 'video',
-    content: ''
-  });
 
   const { data: courseData } = useQuery({
     queryKey: ['course', id],
@@ -30,18 +26,19 @@ export default function AdminCourseEdit() {
     enabled: !!id
   });
 
+  console.log("contentData---->", contentData);
+
   const createSectionMutation = useMutation({
     mutationFn: (data: any) => apiMethods.createSection(id!, data),
     onSuccess: () => {
-      setNewSectionTitle('');
+      setIsSectionModalOpen(false);
       queryClient.invalidateQueries({ queryKey: ['courseContent', id] });
     }
   });
 
   const createLessonMutation = useMutation({
-    mutationFn: (data: any) => apiMethods.createLesson(activeSectionId!, data),
+    mutationFn: ({ sectionId, formData }: any) => apiMethods.createMultipartLesson(sectionId, formData),
     onSuccess: () => {
-      setNewLessonData({ title: '', type: 'video', content: '' });
       setActiveSectionId(null);
       queryClient.invalidateQueries({ queryKey: ['courseContent', id] });
     }
@@ -50,29 +47,28 @@ export default function AdminCourseEdit() {
   const course = courseData?.data || {};
   const sections = contentData?.data || [];
 
-  const handleAddSection = () => {
-    if (!newSectionTitle) return;
+  const handleAddSection = (data: { title: string }) => {
     createSectionMutation.mutate({
-      title: newSectionTitle,
+      ...data,
+      courseId: id,
       order: sections.length + 1
     });
   };
 
-  const handleAddLesson = () => {
-    if (!newLessonData.title || !activeSectionId) return;
-    const targetSection = sections.find((s: any) => s.id === activeSectionId);
-    
-    createLessonMutation.mutate({
-      ...newLessonData,
-      order: (targetSection?.lessons?.length || 0) + 1
-    });
+  const handleCreateLecture = ({ sectionId, title, description, file }: any) => {
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('video', file);
+
+    createLessonMutation.mutate({ sectionId, formData });
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12 pt-6">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <Link 
+          <Link
             to="/admin"
             className="p-2 bg-white rounded-full shadow-sm border border-slate-200 text-slate-500 hover:text-teal-600 hover:border-teal-200 transition-colors"
           >
@@ -85,7 +81,7 @@ export default function AdminCourseEdit() {
             </p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => navigate(`/courses/${id}`)}
           className="px-6 py-2 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl font-bold hover:bg-indigo-100 transition-colors shadow-sm text-sm"
         >
@@ -142,84 +138,37 @@ export default function AdminCourseEdit() {
                 </div>
               )}
 
-              {/* Add Lesson Form */}
-              {activeSectionId === section.id && (
-                <div className="mt-4 p-5 rounded-xl border-2 border-dashed border-teal-200 bg-teal-50/30 animate-in fade-in slide-in-from-top-2">
-                  <h4 className="font-bold text-sm text-slate-700 mb-3 uppercase tracking-wider pl-1">New Lesson</h4>
-                  <div className="space-y-4">
-                    <div className="flex gap-4">
-                      <input
-                        type="text"
-                        placeholder="Lesson Title"
-                        className="flex-1 px-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-                        value={newLessonData.title}
-                        onChange={e => setNewLessonData({ ...newLessonData, title: e.target.value })}
-                      />
-                      <select
-                        className="w-40 px-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-                        value={newLessonData.type}
-                        onChange={e => setNewLessonData({ ...newLessonData, type: e.target.value })}
-                      >
-                        <option value="video">Video</option>
-                        <option value="article">Article</option>
-                        <option value="quiz">Quiz</option>
-                      </select>
-                    </div>
-                    {newLessonData.type !== 'video' && (
-                      <textarea
-                        placeholder="Content text..."
-                        className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 min-h-[100px] font-medium resize-none"
-                        value={newLessonData.content}
-                        onChange={e => setNewLessonData({ ...newLessonData, content: e.target.value })}
-                      />
-                    )}
-                    <div className="flex justify-end gap-3 pt-2">
-                      <button 
-                        onClick={() => setActiveSectionId(null)}
-                        className="px-4 py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-lg transition-colors text-sm"
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={handleAddLesson}
-                        disabled={!newLessonData.title || createLessonMutation.isPending}
-                        className="flex items-center gap-2 px-6 py-2 bg-teal-500 text-white rounded-lg font-bold hover:bg-teal-600 disabled:opacity-50 transition-colors text-sm shadow-md"
-                      >
-                        <Save className="w-4 h-4" /> Save Lesson
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
         ))}
 
-        {/* Add Section Header */}
-        <div className="glass rounded-[1.5rem] p-6 bg-white border border-dashed border-slate-300">
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <div className="flex items-center gap-3 text-slate-500 shrink-0">
-              <Layers className="w-6 h-6" />
-              <span className="font-bold text-lg">Add Section</span>
-            </div>
-            <input
-              type="text"
-              placeholder="e.g. Introduction & Setup"
-              className="flex-1 w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
-              value={newSectionTitle}
-              onChange={e => setNewSectionTitle(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAddSection()}
-            />
-            <button 
-              onClick={handleAddSection}
-              disabled={!newSectionTitle || createSectionMutation.isPending}
-              className="w-full sm:w-auto px-6 py-3 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl font-bold hover:bg-teal-100 disabled:opacity-50 transition-colors"
-            >
-              Add Section
-            </button>
-          </div>
-        </div>
+        {/* Add Section Button */}
+        <button
+          onClick={() => setIsSectionModalOpen(true)}
+          className="w-full flex items-center justify-center p-6 bg-white border-2 border-dashed border-slate-300 rounded-[1.5rem] text-slate-500 font-bold hover:bg-slate-50 hover:text-teal-600 hover:border-teal-300 transition-colors group"
+        >
+          <PlusCircle className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+          Add New Section
+        </button>
       </div>
+
+      {isSectionModalOpen && (
+        <AddSectionModal
+          onClose={() => setIsSectionModalOpen(false)}
+          onSave={handleAddSection}
+          isLoading={createSectionMutation.isPending}
+        />
+      )}
+
+      {activeSectionId && (
+        <AddLectureModal
+          sectionId={activeSectionId}
+          onClose={() => setActiveSectionId(null)}
+          onSave={handleCreateLecture}
+          isLoading={createLessonMutation.isPending}
+        />
+      )}
     </div>
   );
 }
