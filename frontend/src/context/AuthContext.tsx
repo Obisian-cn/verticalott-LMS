@@ -15,6 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (data: any) => Promise<void>;
+  firebaseLogin: (token: string) => Promise<void>;
   register: (data: any) => Promise<void>;
   logout: () => void;
 }
@@ -60,6 +61,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const firebaseLogin = async (token: string) => {
+    const res = await apiMethods.firebaseLogin(token);
+    if (res.success) {
+      localStorage.setItem('token', res.data.tokens.accessToken);
+      if (res.data.tokens.refreshToken) {
+        localStorage.setItem('refreshToken', res.data.tokens.refreshToken);
+      }
+      setUser(res.data.user);
+    } else {
+      throw new Error(res.message || 'Phone Login failed');
+    }
+  };
+
   const register = async (data: any) => {
     const res = await apiMethods.register(data);
     if (res.success) {
@@ -80,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, firebaseLogin, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

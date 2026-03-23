@@ -57,6 +57,7 @@ export default function Register() {
           </div>
         )}
 
+        {/* Email registration suspended
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-2 gap-3 mb-2">
             <button
@@ -167,6 +168,14 @@ export default function Register() {
             )}
           </button>
         </form>
+        */}
+        
+        <div className="text-center py-6">
+          <p className="text-slate-300 font-medium mb-6">Email registration is currently suspended. Please login or register using your phone number.</p>
+          <Link to="/login" className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-all duration-300">
+            Proceed to Phone Login <ArrowRight className="ml-2 w-4 h-4" />
+          </Link>
+        </div>
 
         <p className="mt-8 text-center text-sm text-slate-400 font-medium">
           Already have an account?{' '}

@@ -24,6 +24,10 @@ export const apiMethods = {
     const res = await api.post('/auth/login', data);
     return res.data;
   },
+  firebaseLogin: async (idToken: string) => {
+    const res = await api.post('/auth/login', { token: idToken });
+    return res.data;
+  },
   register: async (data: any) => {
     const res = await api.post('/auth/register', data);
     return res.data;

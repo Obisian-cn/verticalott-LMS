@@ -1,16 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
-import { created, ok, sendResponse } from "../utils/response";
+import { ok } from "../utils/response";
 import { AuthRequest } from "../middlewares/auth";
+import { AppError } from "../utils/AppError";
 
 export class AuthController {
   private authService = new AuthService();
 
-  public register = async (req: Request, res: Response, next: NextFunction) => {
+  public registerDeprecated = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, email, password, role } = req.body;
-      const data = await this.authService.register(name, email, password, role);
-      return created(res, data, "User registered successfully");
+      throw new AppError("Manual registration is deprecated. Please use phone OTP login.", 400);
     } catch (err) {
       next(err);
     }
@@ -18,9 +17,10 @@ export class AuthController {
 
   public login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password } = req.body;
-      console.log("in-------->", email, password);
-      const data = await this.authService.login(email, password);
+      const { token } = req.body;
+      if (!token) throw new AppError("Firebase token is required", 400);
+      
+      const data = await this.authService.login(token);
       return ok(res, data, "Login successful");
     } catch (err) {
       next(err);
@@ -39,8 +39,6 @@ export class AuthController {
 
   public logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Typically, JWT invalidation happens client-side or with a blacklist.
-      // For this implementation, we just return a success response.
       return ok(res, null, "Logout successful");
     } catch (err) {
       next(err);
@@ -49,7 +47,6 @@ export class AuthController {
 
   public me = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      // req.user is set by auth middleware
       return ok(res, { user: req.user }, "Current user details");
     } catch (err) {
       next(err);

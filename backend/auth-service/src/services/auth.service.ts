@@ -1,8 +1,8 @@
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User, UserRole } from "../models";
+import { User } from "../models";
 import { AppError } from "../utils/AppError";
 import { config } from "../config";
+import { firebaseAdmin } from "../utils/firebase";
 
 export class AuthService {
   private generateTokens(userId: string, role: string) {
@@ -19,52 +19,50 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  public async register(name: string, email: string, password: string, role?: UserRole) {
+  public async login(token: string) {
+    if (!token) throw new AppError("Firebase token is required", 400);
+
+    let decodedToken;
     try {
-      const existing = await User.findOne({ where: { email } });
-      if (existing) {
-        throw new AppError("Email already in use", 409);
+      decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+    } catch (err: any) {
+      console.error("Firebase verify fail:", err);
+      throw new AppError("Invalid or expired Firebase token", 401);
+    }
+
+    const { phone_number, uid } = decodedToken;
+    if (!uid) {
+      throw new AppError("UID missing from Firebase token", 400);
+    }
+    const safePhoneNumber = phone_number || uid;
+
+    try {
+      let user = await User.findOne({ where: { firebaseUid: uid } });
+
+      if (!user) {
+        user = await User.create({
+          name: safePhoneNumber,
+          phoneNumber: safePhoneNumber,
+          firebaseUid: uid,
+          role: "student"
+        });
       }
 
-      const hash = await bcrypt.hash(password, 10);
-      const userRole = role || "student";
-      const user = await User.create({ name, email, password: hash, role: userRole });
-
       const tokens = this.generateTokens(user.id, user.role);
 
       return {
-        user: { id: user.id, name: user.name, email: user.email, role: user.role },
-        tokens
-      };
-    } catch (error: any) {
-      console.error("Database query error in register:", error);
-      if (error instanceof AppError) throw error;
-      throw new AppError("Registration failed due to database issue", 500);
-    }
-  }
-
-  public async login(email: string, password: string) {
-    try {
-      console.log("email, password-------->", email, password);
-      const user = await User.findOne({ where: { email } });
-      console.log("user-------->", user);
-      if (!user) throw new AppError("Invalid credentials", 401);
-
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) throw new AppError("Invalid credentials", 401);
-
-      const tokens = this.generateTokens(user.id, user.role);
-
-      return {
-        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        user: { 
+          id: user.id, 
+          name: user.name, 
+          role: user.role, 
+          phoneNumber: user.phoneNumber, 
+          firebaseUid: user.firebaseUid 
+        },
         tokens
       };
     } catch (error: any) {
       console.error("Database query error in login:", error);
-      if (error instanceof AppError) throw error;
-      // If the email column is missing or any other query error occurs,
-      // silently treat it as if the user doesn't exist, to avoid 500 errors.
-      throw new AppError("Invalid credentials", 401);
+      throw new AppError("Failed to login due to database issue", 500);
     }
   }
 

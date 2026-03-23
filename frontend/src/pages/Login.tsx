@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, LogIn, ArrowRight } from 'lucide-react';
+import { Mail, Lock, LogIn, ArrowRight, Phone, MessageSquare } from 'lucide-react';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,7 +11,12 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const [isPhoneLogin, setIsPhoneLogin] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+
+  const { login, firebaseLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +34,53 @@ export default function Login() {
     }
   };
 
+  const setupRecaptcha = () => {
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+    }
+  };
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phoneNumber) return;
+    setError('');
+    setIsLoading(true);
+    try {
+      setupRecaptcha();
+      const appVerifier = (window as any).recaptchaVerifier;
+      const parsedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      const confirmation = await signInWithPhoneNumber(auth, parsedPhone, appVerifier);
+      setConfirmationResult(confirmation);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send OTP');
+      if ((window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier.clear();
+        (window as any).recaptchaVerifier = null;
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp || !confirmationResult) return;
+    setError('');
+    setIsLoading(true);
+    try {
+      const result = await confirmationResult.confirm(otp);
+      const token = await result.user.getIdToken();
+      await firebaseLogin(token);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Invalid OTP');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative">
       {/* Background decoration */}
@@ -38,7 +92,9 @@ export default function Login() {
             <LogIn className="w-8 h-8" />
           </div>
           <h2 className="text-3xl font-extrabold text-white tracking-tight">Welcome back</h2>
-          <p className="text-slate-400 mt-2 font-medium">Please enter your details to sign in.</p>
+          <p className="text-slate-400 mt-2 font-medium">
+            {isPhoneLogin ? 'Sign in with your phone number.' : 'Please enter your details to sign in.'}
+          </p>
         </div>
 
         {error && (
@@ -48,8 +104,10 @@ export default function Login() {
           </div>
         )}
 
+        {/* Email/Password Login Disabled
+        {!isPhoneLogin && (
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
+           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="email">
               Email Address
             </label>
@@ -99,18 +157,94 @@ export default function Login() {
             disabled={isLoading}
             className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-[#b57bff] to-[#e79a6d] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5 mt-2"
           >
-            {isLoading ? (
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <>
-                Sign In <ArrowRight className="ml-2 w-4 h-4" />
-              </>
-            )}
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
+        )}
+        */}
+
+        {isPhoneLogin && !confirmationResult && (
+        <form onSubmit={handlePhoneSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="phone">
+              Phone Number
+            </label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#b57bff] transition-colors">
+                <Phone className="h-5 w-5" />
+              </div>
+              <input
+                id="phone"
+                type="tel"
+                required
+                className="block w-full pl-11 pr-4 py-3 bg-[#151518]/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm group-hover:bg-[#151518]"
+                placeholder="+1 234 567 8900"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Include country code (e.g. +1)</p>
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading || !phoneNumber}
+            className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 mt-2"
+          >
+            {isLoading ? 'Sending OTP...' : 'Send OTP'}
+          </button>
+        </form>
+        )}
+
+        {isPhoneLogin && confirmationResult && (
+        <form onSubmit={handleVerifyOtp} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="otp">
+              Verification Code (OTP)
+            </label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#b57bff] transition-colors">
+                <MessageSquare className="h-5 w-5" />
+              </div>
+              <input
+                id="otp"
+                type="text"
+                required
+                className="block w-full pl-11 pr-4 py-3 bg-[#151518]/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm group-hover:bg-[#151518]"
+                placeholder="123456"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Enter the 6-digit code sent to your phone</p>
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 mt-2"
+          >
+            {isLoading ? 'Verifying...' : 'Verify OTP'}
+          </button>
+          <button type="button" onClick={() => setConfirmationResult(null)} className="w-full text-sm text-slate-400 mt-3 text-center hover:text-white">
+            Use a different phone number
+          </button>
+        </form>
+        )}
+        
+        <div id="recaptcha-container"></div>
+        
+        {/* 
+        <div className="mt-6 flex items-center justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              setIsPhoneLogin(!isPhoneLogin);
+              setConfirmationResult(null);
+            }}
+            className="text-sm font-bold text-[#b57bff] hover:text-indigo-400 transition-colors"
+          >
+            {isPhoneLogin ? 'Login with Email instead' : 'Login with Phone Number'}
+          </button>
+        </div>
 
         <p className="mt-8 text-center text-sm text-slate-400 font-medium">
           Don't have an account?{' '}
@@ -118,6 +252,7 @@ export default function Login() {
             Sign up now
           </Link>
         </p>
+        */}
       </div>
     </div>
   );
