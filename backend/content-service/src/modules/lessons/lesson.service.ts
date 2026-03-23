@@ -76,7 +76,6 @@ export class LessonService {
       if (error instanceof AppError) throw error;
       throw new AppError(`Database error creating lesson: ${error.message}`, 500);
     }
-
   }
 
   /**

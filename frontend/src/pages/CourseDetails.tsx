@@ -95,7 +95,7 @@ export default function CourseDetails() {
           </div>
           
           <div className="w-full md:w-80 shrink-0">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl relative overflow-hidden group">
+            <div className="bg-[#151518]/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
               <div className="relative z-10 flex flex-col">
                 <p className="text-sm font-medium text-slate-300 uppercase tracking-wider mb-2">Full Lifetime Access</p>
@@ -130,26 +130,26 @@ export default function CourseDetails() {
       {/* Course Content */}
       <div className="max-w-4xl space-y-8">
         <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-6">Course Content</h2>
-          <div className="glass bg-white rounded-2xl overflow-hidden divide-y divide-slate-100 border border-slate-100 shadow-sm">
+          <h2 className="text-3xl font-extrabold text-white mb-6">Course Content</h2>
+          <div className="glass bg-[#151518] rounded-2xl overflow-hidden divide-y divide-slate-100 border border-slate-100 shadow-sm">
             {sections.length > 0 ? sections.sort((a: any, b: any) => a.order - b.order).map((section: any) => (
-              <div key={section.id} className="p-6 transition-colors hover:bg-slate-50/50">
+              <div key={section.id} className="p-6 transition-colors hover:bg-[#0a0a0b]/50">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                  <h3 className="text-xl font-bold text-slate-200 flex items-center gap-3">
                     <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-100 text-teal-700 text-sm font-black">
                       {section.order}
                     </span>
                     {section.title}
                   </h3>
-                  <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{section.lessons?.length || 0} lessons</span>
+                  <span className="text-sm font-medium text-slate-400 bg-white/5 px-3 py-1 rounded-full">{section.lessons?.length || 0} lessons</span>
                 </div>
                 
                 <div className="space-y-3 pl-11">
                   {section.lessons && section.lessons.length > 0 ? (
                     section.lessons.sort((a: any, b: any) => a.order - b.order).map((lesson: any) => (
-                      <div key={lesson.id} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 group hover:border-teal-200 hover:bg-teal-50/30 transition-colors">
+                      <div key={lesson.id} className="flex items-center gap-4 p-3 rounded-xl bg-[#0a0a0b] border border-slate-100 group hover:border-teal-200 hover:bg-teal-50/30 transition-colors">
                         <PlayCircle className="w-5 h-5 text-slate-400 group-hover:text-teal-500" />
-                        <span className="flex-1 font-medium text-slate-700 group-hover:text-teal-700 transition-colors">{lesson.title}</span>
+                        <span className="flex-1 font-medium text-slate-300 group-hover:text-teal-700 transition-colors">{lesson.title}</span>
                         {lesson.type && (
                           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                             {lesson.type}
@@ -158,12 +158,12 @@ export default function CourseDetails() {
                       </div>
                     ))
                   ) : (
-                    <p className="text-slate-500 italic text-sm">No lessons available yet.</p>
+                    <p className="text-slate-400 italic text-sm">No lessons available yet.</p>
                   )}
                 </div>
               </div>
             )) : (
-              <div className="p-12 text-center text-slate-500 bg-slate-50 border-dashed border-t border-slate-200">
+              <div className="p-12 text-center text-slate-400 bg-[#0a0a0b] border-dashed border-t border-white/10">
                 <p>Course content is being prepared.</p>
               </div>
             )}

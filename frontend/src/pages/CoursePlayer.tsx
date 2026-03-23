@@ -126,8 +126,8 @@ export default function CoursePlayer() {
                 Your browser does not support the video tag.
               </video>
             ) : (
-              <div className="text-slate-500 flex flex-col items-center p-12 text-center">
-                {activeLesson?.type === 'article' ? <FileText className="w-16 h-16 text-slate-600 mb-4" /> : <PlayCircle className="w-16 h-16 text-slate-600 mb-4" />}
+              <div className="text-slate-400 flex flex-col items-center p-12 text-center">
+                {activeLesson?.type === 'article' ? <FileText className="w-16 h-16 text-slate-400 mb-4" /> : <PlayCircle className="w-16 h-16 text-slate-400 mb-4" />}
                 <p className="text-xl font-bold text-slate-300">{activeLesson?.title || "Select a lesson"}</p>
                 <p className="text-sm mt-2 text-slate-400 max-w-md">{activeLesson?.description || "No video content provided for this lesson."}</p>
               </div>
@@ -151,7 +151,7 @@ export default function CoursePlayer() {
                 }`}
               >
                 {completedLessons[activeLesson?.id] ? (
-                  <><CheckCircle2 className="w-5 h-5 fill-emerald-400 text-slate-900" /> Completed</>
+                  <><CheckCircle2 className="w-5 h-5 fill-emerald-400 text-white" /> Completed</>
                 ) : (
                   <><Circle className="w-5 h-5" /> Mark Complete</>
                 )}
@@ -178,7 +178,7 @@ export default function CoursePlayer() {
                   <h4 className="font-bold text-sm text-slate-300">
                     Section {idx + 1}: {section.title}
                   </h4>
-                  <p className="text-xs text-slate-500 mt-1">{section.lessons?.length || 0} / {section.lessons?.length || 0} | 10min</p>
+                  <p className="text-xs text-slate-400 mt-1">{section.lessons?.length || 0} / {section.lessons?.length || 0} | 10min</p>
                 </div>
                 <div className="flex flex-col">
                   {section.lessons?.sort((a: any, b: any) => a.order - b.order).map((lesson: any, lIdx: number) => {
@@ -198,7 +198,7 @@ export default function CoursePlayer() {
                           {isCompleted ? (
                             <CheckCircle2 className={`w-5 h-5 ${isActive ? 'text-teal-500' : 'text-emerald-500'} hover:scale-110 transition-transform`} />
                           ) : (
-                            <Circle className="w-5 h-5 text-slate-600 hover:text-slate-400 hover:scale-110 transition-transform" />
+                            <Circle className="w-5 h-5 text-slate-400 hover:text-slate-400 hover:scale-110 transition-transform" />
                           )}
                         </div>
                         <div className="flex-1 overflow-hidden">

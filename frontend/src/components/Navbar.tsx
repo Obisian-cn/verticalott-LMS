@@ -22,8 +22,8 @@ export default function Navbar() {
         className={cn(
           "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 font-medium",
           isActive 
-            ? "bg-indigo-600/10 text-indigo-600 shadow-sm" 
-            : "text-slate-600 hover:bg-slate-100/80 hover:text-indigo-600"
+            ? "bg-gradient-to-r from-[#b57bff]/10 to-[#e79a6d]/10 text-[#b57bff] shadow-sm" 
+            : "text-slate-400 hover:bg-white/5 hover:text-white"
         )}
       >
         <Icon className="w-4 h-4" />
@@ -33,15 +33,15 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 glass border-b border-indigo-100/50 supports-backdrop-blur:bg-white/60">
+    <nav className="sticky top-0 z-50 glass border-b border-white/5 supports-backdrop-blur:bg-[#151518]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="p-2 bg-indigo-600 rounded-xl group-hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/20">
+              <div className="p-2 bg-gradient-to-r from-[#b57bff] to-[#e79a6d] rounded-xl group-hover:opacity-90 transition-colors shadow-lg shadow-[#b57bff]/20">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#b57bff] to-[#e79a6d]">
                 Celarinn LMS
               </span>
             </Link>
@@ -56,18 +56,18 @@ export default function Navbar() {
                   <NavLink to="/admin" icon={Settings}>Instructor</NavLink>
                 )}
                 
-                <div className="h-6 w-px bg-slate-200 mx-2" />
+                <div className="h-6 w-px bg-white/10 mx-2" />
                 
-                <div className="flex items-center gap-3 px-3 py-1.5 rounded-full border border-slate-200/60 bg-white/50 shadow-sm">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-bold shadow-inner">
+                <div className="flex items-center gap-3 px-3 py-1.5 rounded-full border border-white/10/60 bg-[#151518]/50 shadow-sm">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#b57bff] to-[#e79a6d] flex items-center justify-center text-white text-sm font-bold shadow-inner">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
-                  <span className="text-sm font-medium text-slate-700 pr-1">{user?.name}</span>
+                  <span className="text-sm font-medium text-slate-300 pr-1">{user?.name}</span>
                 </div>
                 
                 <button
                   onClick={logout}
-                  className="ml-2 p-2.5 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300 group"
+                  className="ml-2 p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300 group"
                   title="Logout"
                 >
                   <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -77,15 +77,15 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+                  className="px-5 py-2.5 text-sm font-medium text-slate-300 hover:text-white transition-colors border border-white/10 rounded-xl hover:bg-white/5"
                 >
-                  Sign in
+                  Log In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md hover:shadow-xl shadow-indigo-600/20 transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="px-5 py-2.5 text-sm font-medium text-black bg-gradient-to-r from-[#b57bff] to-[#e79a6d] hover:opacity-90 rounded-xl shadow-md hover:shadow-xl shadow-[#b57bff]/20 transition-all duration-300 flex items-center gap-1"
                 >
-                  Create Account
+                  Start Free <span className="text-black">→</span>
                 </Link>
               </>
             )}

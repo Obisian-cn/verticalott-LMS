@@ -46,8 +46,8 @@ export default function Register() {
           <div className="inline-flex p-3 rounded-2xl bg-violet-50 text-violet-600 mb-4 ring-1 ring-violet-100 shadow-inner">
             <UserPlus className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Create Account</h2>
-          <p className="text-slate-500 mt-2 font-medium">Join our learning platform today.</p>
+          <h2 className="text-3xl font-extrabold text-white tracking-tight">Create Account</h2>
+          <p className="text-slate-400 mt-2 font-medium">Join our learning platform today.</p>
         </div>
 
         {error && (
@@ -66,7 +66,7 @@ export default function Register() {
                 "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200",
                 formData.role === 'student' 
                   ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm" 
-                  : "border-slate-200 bg-white/50 text-slate-500 hover:border-violet-200 hover:bg-white"
+                  : "border-white/10 bg-[#151518]/50 text-slate-400 hover:border-violet-200 hover:bg-[#151518]"
               )}
             >
               <BookOpen className="w-6 h-6 mb-2" />
@@ -79,7 +79,7 @@ export default function Register() {
                 "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200",
                 formData.role === 'instructor' 
                   ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm" 
-                  : "border-slate-200 bg-white/50 text-slate-500 hover:border-violet-200 hover:bg-white"
+                  : "border-white/10 bg-[#151518]/50 text-slate-400 hover:border-violet-200 hover:bg-[#151518]"
               )}
             >
               <GraduationCap className="w-6 h-6 mb-2" />
@@ -88,7 +88,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5" htmlFor="name">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="name">
               Full Name
             </label>
             <div className="relative group">
@@ -100,7 +100,7 @@ export default function Register() {
                 name="name"
                 type="text"
                 required
-                className="block w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-white"
+                className="block w-full pl-11 pr-4 py-3 bg-[#151518]/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-[#151518]"
                 placeholder="John Doe"
                 value={formData.name}
                 onChange={handleInputChange}
@@ -109,7 +109,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5" htmlFor="email">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="email">
               Email Address
             </label>
             <div className="relative group">
@@ -121,7 +121,7 @@ export default function Register() {
                 name="email"
                 type="email"
                 required
-                className="block w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-white"
+                className="block w-full pl-11 pr-4 py-3 bg-[#151518]/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-[#151518]"
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -130,7 +130,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5" htmlFor="password">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5" htmlFor="password">
               Password
             </label>
             <div className="relative group">
@@ -142,7 +142,7 @@ export default function Register() {
                 name="password"
                 type="password"
                 required
-                className="block w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-white"
+                className="block w-full pl-11 pr-4 py-3 bg-[#151518]/50 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all shadow-sm group-hover:bg-[#151518]"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleInputChange}
@@ -168,7 +168,7 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-slate-500 font-medium">
+        <p className="mt-8 text-center text-sm text-slate-400 font-medium">
           Already have an account?{' '}
           <Link to="/login" className="font-bold text-violet-600 hover:text-violet-500 transition-colors underline decoration-2 decoration-violet-200 hover:decoration-violet-500 underline-offset-4">
             Sign in
