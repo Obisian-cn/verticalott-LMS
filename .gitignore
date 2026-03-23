@@ -21,6 +21,10 @@ logs/
 .env.*.local
 **/.env
 
+# Secrets
+*-adminsdk-file.json
+*firebase-adminsdk*.json
+
 # IDE / editor
 .idea/
 .vscode/
