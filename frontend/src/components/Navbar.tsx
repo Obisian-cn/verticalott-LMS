@@ -42,7 +42,7 @@ export default function Navbar() {
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#b57bff] to-[#e79a6d]">
-                Celarinn LMS
+                Playstori Academy
               </span>
             </Link>
           </div>
