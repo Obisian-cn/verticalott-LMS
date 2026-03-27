@@ -15,9 +15,11 @@ export interface LessonAttributes {
   duration?: number | null;
   status?: string | null;
   order: number;
+  resourcePdfUrl?: string | null;
+  endGoal?: string | null;
 }
 
-type LessonCreationAttributes = Optional<LessonAttributes, "id" | "content" | "description" | "videoId" | "videoPlaybackId" | "videoUrl" | "duration" | "status">;
+type LessonCreationAttributes = Optional<LessonAttributes, "id" | "content" | "description" | "videoId" | "videoPlaybackId" | "videoUrl" | "duration" | "status" | "resourcePdfUrl" | "endGoal">;
 
 export class Lesson
   extends Model<LessonAttributes, LessonCreationAttributes>
@@ -34,6 +36,8 @@ export class Lesson
   public duration!: number | null;
   public status!: string | null;
   public order!: number;
+  public resourcePdfUrl!: string | null;
+  public endGoal!: string | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -96,6 +100,16 @@ Lesson.init(
     order: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    resourcePdfUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: "resource_pdf_url"
+    },
+    endGoal: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: "end_goal"
     }
   },
   {

@@ -94,13 +94,18 @@ export const apiMethods = {
     const res = await api.get(`/content/courses/${courseId}/sections`);
     return res.data;
   },
-  uploadVideo: async (lessonId: string, file: File) => {
+  uploadVideo: async (file: File, title: string, description?: string) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('lessonId', lessonId);
-    const res = await api.post('/videos/upload', formData, {
+    formData.append('video', file);
+    formData.append('title', title);
+    if (description) formData.append('description', description);
+    const res = await api.post('/videos', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+    return res.data;
+  },
+  getVideos: async () => {
+    const res = await api.get('/videos');
     return res.data;
   },
   enroll: async (courseId: string) => {

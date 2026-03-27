@@ -37,7 +37,7 @@ export default function AdminCourseEdit() {
   });
 
   const createLessonMutation = useMutation({
-    mutationFn: ({ sectionId, formData }: any) => apiMethods.createMultipartLesson(sectionId, formData),
+    mutationFn: ({ sectionId, payload }: any) => apiMethods.createLesson(sectionId, payload),
     onSuccess: () => {
       setActiveSectionId(null);
       queryClient.invalidateQueries({ queryKey: ['courseContent', id] });
@@ -55,13 +55,11 @@ export default function AdminCourseEdit() {
     });
   };
 
-  const handleCreateLecture = ({ sectionId, title, description, file }: any) => {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('video', file);
-
-    createLessonMutation.mutate({ sectionId, formData });
+  const handleCreateLecture = ({ sectionId, title, description, videoId, resourcePdfUrl, endGoal }: any) => {
+    createLessonMutation.mutate({ 
+      sectionId, 
+      payload: { title, description, videoId, resourcePdfUrl, endGoal } 
+    });
   };
 
   return (

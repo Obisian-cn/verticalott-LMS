@@ -66,7 +66,7 @@ app.use("/courses", createServiceProxy(services.courses));
 app.use("/content", createServiceProxy(services.content));
 app.use("/lesson", createServiceProxy(services.content));
 
-app.use("/videos", createServiceProxy(services.videos));
+app.use("/videos", createServiceProxy(services.content));
 app.use("/enrollments", createServiceProxy(services.enrollments));
 app.use("/payments", createServiceProxy(services.payments));
 app.use("/progress", createServiceProxy(services.progress));

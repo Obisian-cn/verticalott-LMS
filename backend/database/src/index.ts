@@ -9,6 +9,8 @@ export * from "./models/Progress";
 export * from "./models/Review";
 export * from "./models/Section";
 export * from "./models/VideoAsset";
+export * from "./models/Video";
+export * from "./models/UserVideoProgress";
 
 import { initAssociations } from "./models/associations";
 

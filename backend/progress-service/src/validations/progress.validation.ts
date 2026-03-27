@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const trackProgressSchema = Joi.object({
-  lessonId: Joi.string().required(),
+  videoId: Joi.string().required(),
   completed: Joi.boolean().required(),
+  progressSeconds: Joi.number().optional().default(0),
 });

@@ -11,6 +11,15 @@ import { AppError } from "./utils/AppError";
 import { errorHandler } from "./middlewares/error";
 import courseRoutes from "./routes/course.routes";
 
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception", { error: err });
+  // process.exit(1); // Decide if we want to exit or stay alive. For now, stay alive to prevent crash.
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection", { reason, promise });
+});
+
 const app = express();
 
 app.use(helmet());

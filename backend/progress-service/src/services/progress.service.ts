@@ -1,34 +1,30 @@
-import { Progress, Lesson, Section, Course } from "../models";
+import { UserVideoProgress, Lesson, Section, Course, Video } from "../models";
 import { AppError } from "../utils/AppError";
 
 export class ProgressService {
-  public async trackProgress(userId: string, data: any) {
-    const lesson = await Lesson.findByPk(data.lessonId, {
-      include: [{ model: Section }]
-    });
+  public async trackProgress(userId: string, data: { videoId: string; completed: boolean; progressSeconds?: number }) {
+    const video = await Video.findByPk(data.videoId);
 
-    if (!lesson || !lesson.Section) {
-      throw new AppError("Lesson not found", 404);
+    if (!video) {
+      throw new AppError("Video not found", 404);
     }
 
-    let progress = await Progress.findOne({
-      where: { userId, lessonId: data.lessonId },
+    let progress = await UserVideoProgress.findOne({
+      where: { userId, videoId: data.videoId },
     });
 
     if (progress) {
       progress.completed = data.completed;
-      if (data.completed) {
-        progress.completedAt = new Date();
-      } else {
-        progress.completedAt = undefined as any;
+      if (data.progressSeconds !== undefined) {
+        progress.progressSeconds = Math.max(progress.progressSeconds || 0, data.progressSeconds);
       }
       await progress.save();
     } else {
-      progress = await Progress.create({
+      progress = await UserVideoProgress.create({
         userId,
-        lessonId: data.lessonId,
+        videoId: data.videoId,
         completed: data.completed,
-        completedAt: data.completed ? new Date() : undefined,
+        progressSeconds: data.progressSeconds || 0,
       });
     }
 
@@ -37,19 +33,22 @@ export class ProgressService {
 
   public async getCourseProgress(userId: string, courseId: string) {
     const course = await Course.findByPk(courseId, {
-      include: [{ model: Section, include: [{ model: Lesson }] }],
+      include: [{ model: Section, as: "sections", include: [{ model: Lesson, as: "lessons" }] }],
     });
 
     if (!course) throw new AppError("Course not found", 404);
 
-    const lessonIds = course.Sections?.flatMap((s: any) =>
-      s.lessons?.map((l: any) => l.id) || []
+    const videoIdsArray = (course as any).sections?.flatMap((s: any) =>
+      s.lessons?.map((l: any) => l.videoId).filter((vId: any) => vId != null) || []
     ) || [];
 
-    const progress = await Progress.findAll({
+    // Filter unique videoIds related to this course
+    const videoIds = [...new Set(videoIdsArray)];
+
+    const progress = await UserVideoProgress.findAll({
       where: {
         userId,
-        lessonId: lessonIds,
+        videoId: videoIds as any,
       },
     });
 

@@ -1,17 +1,14 @@
-import { Section, Lesson, Course } from "../../models";
+import { Section, Lesson, Course, Video } from "../../models";
 import { AppError } from "../../utils/AppError";
-import { muxService } from "../../services/mux.service";
-import fs from "fs";
 import { logger } from "../../utils/logger";
 
 export class LessonService {
   /**
-   * Creates a lesson with multipart video upload to Mux explicitly
+   * Creates a lesson mapped strictly to an independently uploaded Video
    */
-  public async createLessonWithVideo(
+  public async createLesson(
     sectionId: string,
-    data: { title: string; description: string },
-    filePath: string,
+    data: { title: string; description: string; videoId?: string; resourcePdfUrl?: string; endGoal?: string },
     instructorId: string,
     role: string
   ): Promise<any> {
@@ -29,50 +26,28 @@ export class LessonService {
       const orderCount = await Lesson.count({ where: { sectionId } });
       const order = orderCount + 1;
 
-      let videoPlaybackId = null;
-      let videoUrl = null;
-      let status = "pending";
-
-      // 1) Stream upload to Mux
-      if (filePath) {
-        try {
-          const { playbackId } = await muxService.uploadVideo(filePath);
-          videoPlaybackId = playbackId;
-          videoUrl = muxService.getPlaybackUrl(playbackId);
-          status = "ready";
-        } catch (err: any) {
-          throw new AppError("Video upload failed: " + err.message, 500);
-        } finally {
-          // Remove temp file from disk immediately
-          try {
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-            }
-          } catch (cleanupErr) {
-            logger.warn("Failed to clean up temp file", { error: cleanupErr });
-          }
-        }
-      }
-
-      // 2) Store lesson in DB
+      // 1) Store lesson in DB
       const lesson = await Lesson.create({
         sectionId,
         title: data.title,
         description: data.description || "",
         type: "video",
-        videoPlaybackId,
-        videoUrl,
-        status,
+        videoId: data.videoId || null,
+        resourcePdfUrl: data.resourcePdfUrl || null,
+        endGoal: data.endGoal || null,
+        status: data.videoId ? "ready" : "pending",
         order,
       });
 
       return {
         id: lesson.id,
         title: lesson.title,
-        videoUrl: lesson.videoUrl,
+        videoId: lesson.videoId,
+        resourcePdfUrl: lesson.resourcePdfUrl,
+        endGoal: lesson.endGoal,
       };
     } catch (error: any) {
-      console.error("DB Query Error in createLessonWithVideo:", error);
+      console.error("DB Query Error in createLesson:", error);
       if (error instanceof AppError) throw error;
       throw new AppError(`Database error creating lesson: ${error.message}`, 500);
     }
@@ -92,6 +67,12 @@ export class LessonService {
               {
                 model: Lesson,
                 as: "lessons",
+                include: [
+                  {
+                    model: Video,
+                    as: "video"
+                  }
+                ]
               },
             ],
           },
@@ -111,7 +92,16 @@ export class LessonService {
           lessons: section.lessons?.map((lesson: any) => ({
             id: lesson.id,
             title: lesson.title,
-            videoUrl: lesson.videoUrl || null,
+            description: lesson.description,
+            videoId: lesson.videoId || null,
+            resourcePdfUrl: lesson.resourcePdfUrl || null,
+            endGoal: lesson.endGoal || null,
+            video: lesson.video ? {
+              id: lesson.video.id,
+              playbackId: lesson.video.playbackId,
+              videoUrl: lesson.video.videoUrl,
+              title: lesson.video.title
+            } : null
           })),
         })),
       };

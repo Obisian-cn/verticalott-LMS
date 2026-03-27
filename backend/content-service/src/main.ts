@@ -11,6 +11,7 @@ import { AppError } from "./utils/AppError";
 import { errorHandler } from "./middlewares/error";
 import contentRoutes from "./routes/content.routes";
 import lessonRoutes from "./modules/lessons/lesson.routes";
+import videoRoutes from "./modules/videos/video.routes";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 // Better to just mount the router at root since it defines full paths
 app.use("/content", contentRoutes);
 app.use("/lesson", lessonRoutes);
+app.use("/videos", videoRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.method} ${req.path} not found`, 404));

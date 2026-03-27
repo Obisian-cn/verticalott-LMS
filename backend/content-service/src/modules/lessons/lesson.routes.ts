@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { LessonController } from "./lesson.controller";
 import { authenticate, authorize } from "../../middlewares/auth";
-import { upload } from "../../utils/upload";
 import { ContentController } from "../../controllers/content.controller"; // Reuse Section logic
 
 const router = Router();
@@ -16,12 +15,11 @@ router.post(
   contentController.createSection
 );
 
-// Lesson Flow with Video Upload (Multer middleware ensures streaming / OS disk fallback)
+// Lesson Flow creation
 router.post(
   "/:sectionId/lessons",
   authenticate,
   authorize(["instructor", "admin"]),
-  upload.single("video"), // handle the multipart upload
   lessonController.createLesson
 );
 

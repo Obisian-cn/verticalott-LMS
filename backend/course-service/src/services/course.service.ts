@@ -1,4 +1,4 @@
-import { Course } from "../models";
+import { Course, Section, Lesson, Video } from "../models";
 import { AppError } from "../utils/AppError";
 
 export class CourseService {
@@ -9,11 +9,58 @@ export class CourseService {
   }
 
   public async getCourses() {
-    return await Course.findAll();
+    return await Course.findAll({
+      include: [
+        {
+          model: Section,
+          as: "sections",
+          include: [
+            {
+              model: Lesson,
+              as: "lessons",
+              include: [
+                {
+                  model: Video,
+                  as: "video",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      order: [
+        ["createdAt", "DESC"],
+        [{ model: Section, as: "sections" }, "order", "ASC"],
+        [{ model: Section, as: "sections" }, { model: Lesson, as: "lessons" }, "order", "ASC"],
+      ],
+    });
   }
 
   public async getCourseById(id: string) {
-    const course = await Course.findByPk(id);
+    const course = await Course.findByPk(id, {
+      include: [
+        {
+          model: Section,
+          as: "sections",
+          include: [
+            {
+              model: Lesson,
+              as: "lessons",
+              include: [
+                {
+                  model: Video,
+                  as: "video",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      order: [
+        [{ model: Section, as: "sections" }, "order", "ASC"],
+        [{ model: Section, as: "sections" }, { model: Lesson, as: "lessons" }, "order", "ASC"],
+      ],
+    });
     if (!course) throw new AppError("Course not found", 404);
     return course;
   }
