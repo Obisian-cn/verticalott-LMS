@@ -8,7 +8,8 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
   const queryClient = useQueryClient();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [resourcePdfUrl, setResourcePdfUrl] = useState('');
+  const [resourcePdfFile, setResourcePdfFile] = useState<File | null>(null);
+  const [pdfError, setPdfError] = useState('');
   const [endGoal, setEndGoal] = useState('');
   
   const [tab, setTab] = useState<'select' | 'upload'>('select');
@@ -24,14 +25,27 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
 
   const uploadVideoMutation = useMutation({
     mutationFn: ({ file, title, description }: any) => apiMethods.uploadVideo(file, title, description),
-    onSuccess: (video) => {
+    onSuccess: (video, variables: any) => {
       queryClient.invalidateQueries({ queryKey: ['instructorVideos'] });
       // Call save with the newly created video ID
-      onSave({ sectionId, title, description, videoId: video.data.id, resourcePdfUrl, endGoal });
+      onSave({ sectionId, title, description, videoId: video.data.id, resourcePdfUrl: variables.resourcePdfUrl, endGoal: variables.endGoal });
     }
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    let finalPdfUrl = '';
+    
+    if (resourcePdfFile) {
+      try {
+        const res = await apiMethods.uploadPdf(resourcePdfFile);
+        finalPdfUrl = res.data.url;
+      } catch (err) {
+        setPdfError('Failed to upload PDF');
+        return;
+      }
+    }
+    setPdfError('');
+
     if (tab === 'upload') {
       if (!file) {
         setFileError('Video file is required');
@@ -39,13 +53,13 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
       }
       setFileError('');
       // Triggers upload, which then triggers onSave
-      uploadVideoMutation.mutate({ file, title, description });
+      uploadVideoMutation.mutate({ file, title, description, resourcePdfUrl: finalPdfUrl, endGoal });
     } else {
       if (!selectedVideoId) {
         setFileError('Please select a video');
         return;
       }
-      onSave({ sectionId, title, description, videoId: selectedVideoId, resourcePdfUrl, endGoal });
+      onSave({ sectionId, title, description, videoId: selectedVideoId, resourcePdfUrl: finalPdfUrl, endGoal });
     }
   };
 
@@ -99,14 +113,14 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-300 mb-2">Resource PDF URL</label>
+            <label className="block text-sm font-bold text-slate-300 mb-2">Resource PDF</label>
             <input 
-              type="url"
-              className="w-full px-4 py-3 bg-[#151518] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="https://example.com/notes.pdf"
-              value={resourcePdfUrl}
-              onChange={e => setResourcePdfUrl(e.target.value)}
+              type="file"
+              accept=".pdf"
+              className="w-full px-4 py-3 bg-[#151518] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-300"
+              onChange={e => setResourcePdfFile(e.target.files?.[0] || null)}
             />
+            {pdfError && <p className="text-red-400 text-xs mt-2">{pdfError}</p>}
           </div>
           <div>
             <label className="block text-sm font-bold text-slate-300 mb-2">End Goal</label>

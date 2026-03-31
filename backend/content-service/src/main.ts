@@ -15,9 +15,14 @@ import videoRoutes from "./modules/videos/video.routes";
 
 const app = express();
 
+import path from "path";
+
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Serve uploads folder
+app.use("/content/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use(
   morgan("combined", {

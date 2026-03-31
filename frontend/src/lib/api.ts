@@ -43,7 +43,10 @@ export const apiMethods = {
     return res.data;
   },
   getCourseContent: async (id: string) => {
-    const res = await api.get(`/content/courses/${id}/sections`);
+    const res = await api.get(`/lesson/courses/${id}/curriculum`);
+    if (res.data?.data && !Array.isArray(res.data.data) && res.data.data.sections) {
+      res.data.data = res.data.data.sections;
+    }
     return res.data; // Includes sections and lessons
   },
 
@@ -56,7 +59,7 @@ export const apiMethods = {
     const res = await api.get(`/progress/courses/${courseId}/progress`);
     return res.data;
   },
-  updateProgress: async (data: { lessonId: string, completed: boolean }) => {
+  updateProgress: async (data: { videoId: string, completed: boolean }) => {
     const res = await api.post('/progress', data);
     return res.data;
   },
@@ -81,7 +84,7 @@ export const apiMethods = {
     return res.data;
   },
   createLesson: async (sectionId: string, data: any) => {
-    const res = await api.post(`/content/sections/${sectionId}/lessons`, data);
+    const res = await api.post(`/lesson/${sectionId}/lessons`, data);
     return res.data;
   },
   createMultipartLesson: async (sectionId: string, formData: FormData) => {
@@ -91,7 +94,10 @@ export const apiMethods = {
     return res.data;
   },
   getCurriculum: async (courseId: string) => {
-    const res = await api.get(`/content/courses/${courseId}/sections`);
+    const res = await api.get(`/lesson/courses/${courseId}/curriculum`);
+    if (res.data?.data && !Array.isArray(res.data.data) && res.data.data.sections) {
+      res.data.data = res.data.data.sections;
+    }
     return res.data;
   },
   uploadVideo: async (file: File, title: string, description?: string) => {
@@ -100,6 +106,14 @@ export const apiMethods = {
     formData.append('title', title);
     if (description) formData.append('description', description);
     const res = await api.post('/videos', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  },
+  uploadPdf: async (file: File) => {
+    const formData = new FormData();
+    formData.append('pdf', file);
+    const res = await api.post('/lesson/upload/pdf', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return res.data;

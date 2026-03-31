@@ -10,6 +10,8 @@ export class LessonController {
   public createLesson = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const sectionId = req.params.sectionId;
+      console.log("CREATE LESSON RECEIVED BODY:", req.body);
+      
       const { title, description, videoId, resourcePdfUrl, endGoal } = req.body;
       
       if (!title || !description) {
@@ -34,6 +36,22 @@ export class LessonController {
       const courseId = req.params.courseId;
       const curriculum = await this.lessonService.getCourseCurriculum(courseId);
       return ok(res, curriculum, "Course curriculum retrieved successfully");
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public uploadPdf = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        throw new AppError("No PDF file uploaded", 400);
+      }
+      
+      const fileUrl = `${req.protocol}://${req.get("host")}/content/uploads/${req.file.filename}`;
+      // In a real production setup, req.get('host') might be the gateway or direct service depending on network
+      // But since we proxy, the host header is preserved by default (changeOrigin: true in the gateway).
+      // Here we just hardcode the path relative to the domain (it works with the gateway).
+      return ok(res, { url: fileUrl }, "PDF uploaded successfully");
     } catch (err) {
       next(err);
     }

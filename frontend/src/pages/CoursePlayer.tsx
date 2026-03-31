@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import MuxPlayer from '@mux/mux-player-react';
-import { PlayCircle, CheckCircle2, Circle, FileText, HelpCircle, ChevronLeft, Award } from 'lucide-react';
+import { PlayCircle, CheckCircle2, Circle, FileText, HelpCircle, ChevronLeft, Award, Download, Target } from 'lucide-react';
 
 export default function CoursePlayer() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -22,22 +22,22 @@ export default function CoursePlayer() {
   });
 
   const updateProgress = useMutation({
-    mutationFn: (data: { lessonId: string, completed: boolean }) => apiMethods.updateProgress(data),
+    mutationFn: (data: { videoId: string, completed: boolean }) => apiMethods.updateProgress(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courseProgress', courseId] });
     }
   });
 
   const sections = contentData?.data || [];
-  const completedLessons = Array.isArray(progressData?.data) 
-    ? progressData.data.reduce((acc: Record<string, boolean>, p: any) => { acc[p.lessonId] = p.completed; return acc; }, {}) 
+  const completedVideos = Array.isArray(progressData?.data)
+    ? progressData.data.reduce((acc: Record<string, boolean>, p: any) => { acc[p.videoId] = p.completed; return acc; }, {})
     : {};
 
   const totalLessons = useMemo(() => {
     return sections.reduce((acc: number, section: any) => acc + (section.lessons?.length || 0), 0);
   }, [sections]);
 
-  const completedCount = Object.values(completedLessons).filter(Boolean).length;
+  const completedCount = Object.values(completedVideos).filter(Boolean).length;
   const progressPercent = totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100);
 
   // Set initial lesson
@@ -48,8 +48,9 @@ export default function CoursePlayer() {
     }
   }
 
-  const handleToggleComplete = (lessonId: string) => {
-    updateProgress.mutate({ lessonId, completed: !completedLessons[lessonId] });
+  const handleToggleComplete = (videoId: string | undefined | null) => {
+    if (!videoId) return;
+    updateProgress.mutate({ videoId, completed: !completedVideos[videoId] });
   };
 
   if (contentLoading) {
@@ -65,7 +66,7 @@ export default function CoursePlayer() {
       {/* Top Navbar */}
       <header className="h-16 shrink-0 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-10 sticky top-0">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => navigate('/dashboard')}
             className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
           >
@@ -79,7 +80,7 @@ export default function CoursePlayer() {
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-slate-300">{progressPercent}%</span>
             <div className="w-32 sm:w-48 h-2.5 rounded-full bg-slate-800 overflow-hidden shadow-inner">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
               ></div>
@@ -99,27 +100,27 @@ export default function CoursePlayer() {
         {/* Main Video / Content display (Left) */}
         <div className="flex-1 flex flex-col overflow-y-auto bg-slate-950">
           <div className="w-full bg-black aspect-video flex-shrink-0 relative flex justify-center items-center border-b border-slate-800 shadow-2xl">
-            {activeLesson?.videoPlaybackId ? (
+            {(activeLesson?.video?.playbackId || activeLesson?.videoPlaybackId) ? (
               <MuxPlayer
                 streamType="on-demand"
-                playbackId={activeLesson.videoPlaybackId}
+                playbackId={activeLesson?.video?.playbackId || activeLesson?.videoPlaybackId}
                 metadataVideoTitle={activeLesson?.title || "Course Video"}
                 accentColor="#14b8a6"
                 className="w-full h-full object-contain"
                 onEnded={() => {
-                  if (!completedLessons[activeLesson.id]) {
-                    handleToggleComplete(activeLesson.id);
+                  if (activeLesson?.videoId && !completedVideos[activeLesson.videoId]) {
+                    handleToggleComplete(activeLesson.videoId);
                   }
                 }}
               />
-            ) : activeLesson?.videoUrl ? (
-              <video 
-                controls 
+            ) : (activeLesson?.video?.videoUrl || activeLesson?.videoUrl) ? (
+              <video
+                controls
                 className="w-full h-full object-contain"
-                src={activeLesson.videoUrl}
+                src={activeLesson?.video?.videoUrl || activeLesson?.videoUrl}
                 onEnded={() => {
-                  if (!completedLessons[activeLesson.id]) {
-                    handleToggleComplete(activeLesson.id);
+                  if (activeLesson?.videoId && !completedVideos[activeLesson.videoId]) {
+                    handleToggleComplete(activeLesson.videoId);
                   }
                 }}
               >
@@ -133,7 +134,7 @@ export default function CoursePlayer() {
               </div>
             )}
           </div>
-          
+
           <div className="p-8 max-w-4xl mx-auto w-full flex-1">
             <div className="flex items-start justify-between">
               <div>
@@ -142,22 +143,53 @@ export default function CoursePlayer() {
                   {activeLesson?.type || 'Video'}
                 </span>
               </div>
-              <button 
-                onClick={() => activeLesson && handleToggleComplete(activeLesson.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all ${
-                  completedLessons[activeLesson?.id] 
-                    ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 ring-1 ring-emerald-500/50' 
+              <button
+                onClick={() => handleToggleComplete(activeLesson?.videoId)}
+                disabled={!activeLesson?.videoId}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all ${activeLesson?.videoId && completedVideos[activeLesson.videoId]
+                    ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 ring-1 ring-emerald-500/50'
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700 ring-1 ring-slate-700'
-                }`}
+                  } ${!activeLesson?.videoId ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {completedLessons[activeLesson?.id] ? (
+                {activeLesson?.videoId && completedVideos[activeLesson.videoId] ? (
                   <><CheckCircle2 className="w-5 h-5 fill-emerald-400 text-white" /> Completed</>
                 ) : (
                   <><Circle className="w-5 h-5" /> Mark Complete</>
                 )}
               </button>
             </div>
-            
+
+            {activeLesson?.description && (
+              <div className="mt-6">
+                <p className="text-lg text-slate-300 leading-relaxed">{activeLesson.description}</p>
+              </div>
+            )}
+
+            {activeLesson?.resourcePdfUrl && (
+              <div className="mt-6">
+                <a
+                  href={activeLesson.resourcePdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 text-teal-400 hover:bg-slate-700 hover:text-teal-300 transition-colors font-semibold shadow-sm border border-slate-700 hover:border-teal-500/30 group"
+                >
+                  <Download className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+                  Download Lesson Resources (PDF)
+                </a>
+              </div>
+            )}
+            {activeLesson?.endGoal && (
+              <div className="mt-6 p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-start gap-4">
+                <div className="p-3 bg-indigo-500/20 rounded-xl shrink-0">
+                  <Target className="w-6 h-6 text-indigo-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-indigo-400 mb-1">Lesson Objective</h3>
+                  <p className="text-slate-300 leading-relaxed">{activeLesson.endGoal}</p>
+                </div>
+              </div>
+            )}
+
             <div className="mt-8 prose prose-invert max-w-none prose-teal">
               {activeLesson?.content && (
                 <div dangerouslySetInnerHTML={{ __html: activeLesson.content }} />
@@ -183,18 +215,17 @@ export default function CoursePlayer() {
                 <div className="flex flex-col">
                   {section.lessons?.sort((a: any, b: any) => a.order - b.order).map((lesson: any, lIdx: number) => {
                     const isActive = activeLesson?.id === lesson.id;
-                    const isCompleted = completedLessons[lesson.id];
-                    
+                    const isCompleted = lesson.videoId ? completedVideos[lesson.videoId] : false;
+
                     return (
                       <button
                         key={lesson.id}
                         onClick={() => setActiveLesson(lesson)}
-                        className={`text-left p-4 flex items-start gap-3 hover:bg-slate-800 transition-colors group relative ${
-                          isActive ? 'bg-slate-800 text-teal-400' : 'text-slate-400'
-                        }`}
+                        className={`text-left p-4 flex items-start gap-3 hover:bg-slate-800 transition-colors group relative ${isActive ? 'bg-slate-800 text-teal-400' : 'text-slate-400'
+                          }`}
                       >
                         {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.8)]" />}
-                        <div className="mt-0.5 shrink-0" onClick={(e) => { e.stopPropagation(); handleToggleComplete(lesson.id); }}>
+                        <div className="mt-0.5 shrink-0" onClick={(e) => { e.stopPropagation(); handleToggleComplete(lesson.videoId); }}>
                           {isCompleted ? (
                             <CheckCircle2 className={`w-5 h-5 ${isActive ? 'text-teal-500' : 'text-emerald-500'} hover:scale-110 transition-transform`} />
                           ) : (

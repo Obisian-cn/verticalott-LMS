@@ -29,9 +29,7 @@ app.get("/", (req, res) => {
   res.json({ service: "progress-service" });
 });
 
-// Since we have POST /progress and GET /courses/:id/progress, we mount at root
-app.post("/progress", progressRoutes); // For POST /
-app.use("/", progressRoutes); // For /courses/:id/progress
+app.use("/progress", progressRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Route ${req.method} ${req.path} not found`, 404));

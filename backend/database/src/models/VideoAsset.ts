@@ -59,5 +59,4 @@ VideoAsset.init(
 );
 
 VideoAsset.belongsTo(Lecture, { foreignKey: "lectureId", as: "lecture" });
-VideoAsset.hasOne(Lesson, { foreignKey: "videoId", as: "Lesson" });
 

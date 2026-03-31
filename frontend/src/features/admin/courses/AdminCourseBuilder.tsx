@@ -44,8 +44,8 @@ export default function AdminCourseBuilder() {
   });
 
   const handleCreateSection = (data: { title: string }) => {
-    const sections = curriculumData?.data?.sections || [];
-    createSectionMutation.mutate({ ...data, courseId, order: sections.length + 1 });
+    const sectionsList = Array.isArray(curriculumData?.data) ? curriculumData.data : [];
+    createSectionMutation.mutate({ ...data, courseId, order: sectionsList.length + 1 });
   };
 
   const handleCreateLecture = ({ sectionId, title, description, file }: any) => {

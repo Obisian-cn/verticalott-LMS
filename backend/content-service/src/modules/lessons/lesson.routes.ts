@@ -16,11 +16,22 @@ router.post(
 );
 
 // Lesson Flow creation
+import { uploadLocal } from "../../utils/upload";
+
 router.post(
   "/:sectionId/lessons",
   authenticate,
   authorize(["instructor", "admin"]),
   lessonController.createLesson
+);
+
+// Upload PDF for lesson
+router.post(
+  "/upload/pdf",
+  authenticate,
+  authorize(["instructor", "admin"]),
+  uploadLocal.single("pdf"),
+  lessonController.uploadPdf
 );
 
 // Get Course Curriculum
