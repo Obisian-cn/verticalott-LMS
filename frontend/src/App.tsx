@@ -15,6 +15,7 @@ import AdminCourseCreate from './pages/AdminCourseCreate';
 import AdminCourseEdit from './pages/AdminCourseEdit';
 import AdminCoursesList from './features/admin/courses/AdminCoursesList';
 import AdminCourseBuilder from './features/admin/courses/AdminCourseBuilder';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 const PrivateRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -47,6 +48,7 @@ function App() {
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseDetails />} />
               <Route path="/learn/:courseId" element={<CoursePlayer />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/courses" element={<AdminCoursesList />} />
               <Route path="/admin/courses/create" element={<AdminCourseCreate />} />
@@ -56,6 +58,7 @@ function App() {
             
             <Route path="/" element={<Navigate to="/dashboard" />} />
           </Routes>
+
         </main>
       </div>
     </Router>

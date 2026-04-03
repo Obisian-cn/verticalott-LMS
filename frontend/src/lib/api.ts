@@ -125,5 +125,9 @@ export const apiMethods = {
   enroll: async (courseId: string) => {
     const res = await api.post('/enrollments', { courseId });
     return res.data;
+  },
+  createPayment: async (courseId: string, amount: number) => {
+    const res = await api.post('/payments/create', { courseId, amount, provider: 'cashfree' });
+    return res.data;
   }
 };

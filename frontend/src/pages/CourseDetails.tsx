@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import { BookOpen, Star, Clock, Users, CheckCircle2, PlayCircle } from 'lucide-react';
+import { load } from '@cashfreepayments/cashfree-js';
 
 export default function CourseDetails() {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,24 @@ export default function CourseDetails() {
     }
   });
 
+  const paymentMutation = useMutation({
+    mutationFn: (amount: number) => apiMethods.createPayment(id!, amount),
+    onSuccess: async (data) => {
+      localStorage.setItem('pending_enrollment_course_id', id!);
+      const cashfree = await load({
+        mode: "sandbox" // change to "production" for live
+      });
+      cashfree.checkout({
+        paymentSessionId: data.data?.paymentSessionId || data.paymentSessionId,
+        returnUrl: `${window.location.origin}/payment/success?order_id={order_id}`
+      });
+    },
+    onError: (error) => {
+      console.error("Payment error", error);
+      alert("Failed to initialize payment. See console.");
+    }
+  });
+
   if (courseLoading || contentLoading) {
     return (
       <div className="flex justify-center items-center h-64 animate-pulse">
@@ -33,6 +52,7 @@ export default function CourseDetails() {
       </div>
     );
   }
+
 
   const course = courseData?.data || {};
   const sections = contentData?.data || [];
@@ -104,11 +124,11 @@ export default function CourseDetails() {
                 </div>
                 
                 <button
-                  onClick={() => enrollMutation.mutate()}
-                  disabled={enrollMutation.isPending}
+                  onClick={() => paymentMutation.mutate(Number(course.price || 49.99))}
+                  disabled={paymentMutation.isPending || enrollMutation.isPending}
                   className="w-full py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-lg shadow-lg hover:shadow-teal-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center"
                 >
-                  {enrollMutation.isPending ? 'Processing...' : 'Enroll Now'}
+                  {paymentMutation.isPending || enrollMutation.isPending ? 'Processing...' : 'Enroll Now'}
                 </button>
                 
                 <ul className="mt-6 space-y-3">
