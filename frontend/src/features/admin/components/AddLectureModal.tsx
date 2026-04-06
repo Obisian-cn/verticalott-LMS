@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Save, Video as VideoIcon, UploadCloud } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, Save, Video as VideoIcon, UploadCloud, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import VideoUploader from './VideoUploader';
 import { apiMethods } from '../../../lib/api';
@@ -14,6 +14,7 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
   
   const [tab, setTab] = useState<'select' | 'upload'>('select');
   const [selectedVideoId, setSelectedVideoId] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState('');
@@ -65,9 +66,14 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
 
   const isSaving = isLoading || uploadVideoMutation.isPending;
 
+  const filteredVideos = useMemo(() => {
+    if (!videosData?.data) return [];
+    return videosData.data.filter((v: any) => v.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [videosData, searchQuery]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-[#151518] rounded-2xl shadow-xl w-full max-w-xl overflow-hidden animate-in slide-in-from-bottom-4 flex flex-col max-h-[90vh]">
+      <div className="bg-[#151518] rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden animate-in slide-in-from-bottom-4 flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-[#0a0a0b] shrink-0">
           <h2 className="font-bold text-lg text-slate-200">Add New Lecture (Video)</h2>
           <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:bg-white/10 hover:text-slate-400 transition-colors">
@@ -139,16 +145,46 @@ export default function AddLectureModal({ sectionId, onClose, onSave, isLoading 
               {isLoadingVideos ? (
                 <p className="text-sm text-slate-400">Loading your videos...</p>
               ) : (
-                <select
-                  value={selectedVideoId}
-                  onChange={e => { setSelectedVideoId(e.target.value); setFileError(''); }}
-                  className="w-full px-4 py-3 bg-[#151518] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-200"
-                >
-                  <option value="" disabled>--- Choose an existing video ---</option>
-                  {(videosData?.data || []).map((video: any) => (
-                    <option key={video.id} value={video.id}>{video.title}</option>
-                  ))}
-                </select>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search videos by title..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-[#151518] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-200"
+                    />
+                  </div>
+                  
+                  <div className="max-h-[240px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                    {filteredVideos.length > 0 ? (
+                      filteredVideos.map((video: any) => (
+                        <div 
+                          key={video.id}
+                          onClick={() => { setSelectedVideoId(video.id); setFileError(''); }}
+                          className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedVideoId === video.id ? 'border-teal-500 bg-teal-500/10 shadow-sm' : 'border-white/5 bg-[#151518] hover:border-white/20'}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <VideoIcon className={`w-5 h-5 ${selectedVideoId === video.id ? 'text-teal-400' : 'text-slate-400'}`} />
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-semibold truncate ${selectedVideoId === video.id ? 'text-teal-400' : 'text-slate-300'}`}>
+                                {video.title}
+                              </p>
+                              {video.description && (
+                                <p className="text-xs text-slate-500 truncate mt-0.5">{video.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-8 text-center bg-[#151518] rounded-xl border border-dashed border-white/10">
+                        <p className="text-slate-400 text-sm">No videos match your search.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
                {fileError && <p className="text-red-400 text-xs mt-2">{fileError}</p>}
             </div>
