@@ -8,6 +8,7 @@ export class PaymentController {
 
   public createPayment = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+      console.log("Auth Request User----->", req.user);
       const intent = await this.paymentService.createPayment(req.user!.id, req.body);
       return created(res, intent, "Payment intent created successfully");
     } catch (err) {
@@ -30,10 +31,26 @@ export class PaymentController {
 
   public webhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Security warning: In production verify webhook signature!
-      const { paymentId, status } = req.body;
-      const payment = await this.paymentService.handleWebhook(paymentId, status);
-      return ok(res, payment, "Webhook processed successfully");
+      // Cashfree webhook structure usually has data.order.order_id
+      console.log("Cashfree Webhook body: ", req.body);
+      
+      const orderId = req.body?.data?.order?.order_id || req.body?.orderId || req.body?.paymentId;
+      const paymentStatus = req.body?.data?.payment?.payment_status || req.body?.status;
+
+      let mappedStatus: "completed" | "failed" | null = null;
+      
+      if (paymentStatus === "SUCCESS" || paymentStatus === "completed") {
+        mappedStatus = "completed";
+      } else if (paymentStatus === "FAILED" || paymentStatus === "USER_DROPPED" || paymentStatus === "failed") {
+        mappedStatus = "failed";
+      }
+
+      if (orderId && mappedStatus) {
+        const payment = await this.paymentService.handleWebhook(orderId, mappedStatus);
+        return ok(res, payment, "Webhook processed successfully");
+      }
+      
+      return ok(res, {}, "Webhook received but not processed");
     } catch (err) {
       next(err);
     }

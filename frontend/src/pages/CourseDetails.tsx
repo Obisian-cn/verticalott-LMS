@@ -32,7 +32,7 @@ export default function CourseDetails() {
     onSuccess: async (data) => {
       localStorage.setItem('pending_enrollment_course_id', id!);
       const cashfree = await load({
-        mode: "sandbox" // change to "production" for live
+        mode: "production" // using production to match backend keys
       });
       cashfree.checkout({
         paymentSessionId: data.data?.paymentSessionId || data.paymentSessionId,

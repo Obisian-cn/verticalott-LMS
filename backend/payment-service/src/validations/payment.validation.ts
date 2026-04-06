@@ -7,8 +7,4 @@ export const createPaymentSchema = Joi.object({
   provider: Joi.string().required(),
 });
 
-export const webhookSchema = Joi.object({
-  // Dependent on provider webhook structure, assuming basic
-  paymentId: Joi.string().required(),
-  status: Joi.string().valid("completed", "failed").required(),
-});
+export const webhookSchema = Joi.object().unknown(true);
