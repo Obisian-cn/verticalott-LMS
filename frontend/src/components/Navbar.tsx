@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, LogOut, LayoutDashboard, Compass, Settings } from 'lucide-react';
+import { Play, LogOut, LayoutDashboard, Compass, Settings } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
 
@@ -39,7 +39,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="p-2 bg-gradient-to-r from-[#b57bff] to-[#e79a6d] rounded-xl group-hover:opacity-90 transition-colors shadow-lg shadow-[#b57bff]/20">
-                <BookOpen className="w-5 h-5 text-white" />
+                <Play className="w-5 h-5 text-white fill-white" />
               </div>
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#b57bff] to-[#e79a6d]">
                 Playstori Academy
