@@ -34,7 +34,15 @@ export default function CoursePlayer() {
     : {};
 
   const totalLessons = useMemo(() => {
-    return sections.reduce((acc: number, section: any) => acc + (section.lessons?.length || 0), 0);
+    const videoIds = new Set<string>();
+    sections.forEach((section: any) => {
+      section.lessons?.forEach((lesson: any) => {
+        if (lesson.videoId) {
+          videoIds.add(lesson.videoId);
+        }
+      });
+    });
+    return videoIds.size;
   }, [sections]);
 
   const completedCount = Object.values(completedVideos).filter(Boolean).length;
