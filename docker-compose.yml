@@ -26,10 +26,10 @@ services:
     image: lms-backend
     container_name: lms-api-gateway
     restart: unless-stopped
-    command: ["node", "dist/api-gateway/main.js"]
+    command: [ "node", "dist/api-gateway/main.js" ]
     # Only exposing the api-gateway to the outside world based on prompt instructions
     ports:
-      - "3000:3000"
+      - "5000:3000"
     env_file:
       - ./backend/.env
     depends_on:
@@ -40,7 +40,7 @@ services:
     image: lms-backend
     container_name: lms-auth-service
     restart: unless-stopped
-    command: ["node", "dist/auth-service/main.js"]
+    command: [ "node", "dist/auth-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -51,7 +51,7 @@ services:
     image: lms-backend
     container_name: lms-user-service
     restart: unless-stopped
-    command: ["node", "dist/user-service/main.js"]
+    command: [ "node", "dist/user-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -61,7 +61,7 @@ services:
     image: lms-backend
     container_name: lms-course-service
     restart: unless-stopped
-    command: ["node", "dist/course-service/main.js"]
+    command: [ "node", "dist/course-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -71,7 +71,7 @@ services:
     image: lms-backend
     container_name: lms-content-service
     restart: unless-stopped
-    command: ["node", "dist/content-service/main.js"]
+    command: [ "node", "dist/content-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -81,7 +81,7 @@ services:
     image: lms-backend
     container_name: lms-video-service
     restart: unless-stopped
-    command: ["node", "dist/video-service/main.js"]
+    command: [ "node", "dist/video-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -91,7 +91,7 @@ services:
     image: lms-backend
     container_name: lms-enrollment-service
     restart: unless-stopped
-    command: ["node", "dist/enrollment-service/main.js"]
+    command: [ "node", "dist/enrollment-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -101,7 +101,7 @@ services:
     image: lms-backend
     container_name: lms-payment-service
     restart: unless-stopped
-    command: ["node", "dist/payment-service/main.js"]
+    command: [ "node", "dist/payment-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -111,7 +111,7 @@ services:
     image: lms-backend
     container_name: lms-progress-service
     restart: unless-stopped
-    command: ["node", "dist/progress-service/main.js"]
+    command: [ "node", "dist/progress-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -121,7 +121,7 @@ services:
     image: lms-backend
     container_name: lms-review-service
     restart: unless-stopped
-    command: ["node", "dist/review-service/main.js"]
+    command: [ "node", "dist/review-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -131,7 +131,7 @@ services:
     image: lms-backend
     container_name: lms-notification-service
     restart: unless-stopped
-    command: ["node", "dist/notification-service/main.js"]
+    command: [ "node", "dist/notification-service/main.js" ]
     env_file:
       - ./backend/.env
     depends_on:
@@ -143,7 +143,7 @@ services:
     container_name: lms-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:8080"
     depends_on:
       - api-gateway
 
