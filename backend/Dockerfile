@@ -31,5 +31,5 @@ RUN npm ci --omit=dev
 COPY --from=builder /usr/src/app/dist ./dist
 
 # The default command will run the api-gateway. 
-# Other default commands can be overridden in docker-compose.yml.
-CMD ["node", "dist/apps/api-gateway/main.js"]
+# Add optional debugging step
+RUN ls -R dist
