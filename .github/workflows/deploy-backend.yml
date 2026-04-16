@@ -27,8 +27,9 @@ jobs:
             # Adjust this path if your repository is placed differently on the VM
             cd ~/verticalott-LMS/backend
             
-            # Pull the latest code from the dev branch
-            git pull origin dev
+            # Force pull the latest code from the dev branch without merging issues
+            git fetch origin dev
+            git reset --hard origin/dev
             
             # Rebuild the unified image incorporating the latest code
             docker compose build

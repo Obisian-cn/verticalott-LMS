@@ -26,8 +26,9 @@ jobs:
             # Navigate to the frontend directory on your VM
             cd ~/verticalott-LMS/frontend
             
-            # Pull the latest frontend code from the dev branch
-            git pull origin dev
+            # Force pull the latest frontend code from the dev branch without merging issues
+            git fetch origin dev
+            git reset --hard origin/dev
             
             # Build the new Nginx+Vite docker image
             docker compose build
