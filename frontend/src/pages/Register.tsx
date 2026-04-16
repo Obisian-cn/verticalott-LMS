@@ -13,7 +13,7 @@ export default function Register() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
+
     try {
       await register(formData);
       navigate('/dashboard');
@@ -40,7 +40,7 @@ export default function Register() {
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 relative py-12">
       {/* Background decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[500px] bg-gradient-to-br from-violet-300/30 to-fuchsia-300/30 blur-3xl rounded-full -z-10 animate-pulse" />
-      
+
       <div className="w-full max-w-md glass rounded-[2rem] p-8 sm:p-10 transform transition-all shadow-2xl shadow-violet-500/10">
         <div className="text-center mb-8">
           <div className="inline-flex p-3 rounded-2xl bg-violet-50 text-violet-600 mb-4 ring-1 ring-violet-100 shadow-inner">
@@ -64,8 +64,8 @@ export default function Register() {
               onClick={() => setFormData({ ...formData, role: 'student' })}
               className={twMerge(
                 "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200",
-                formData.role === 'student' 
-                  ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm" 
+                formData.role === 'student'
+                  ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm"
                   : "border-white/10 bg-[#151518]/50 text-slate-400 hover:border-violet-200 hover:bg-[#151518]"
               )}
             >
@@ -77,8 +77,8 @@ export default function Register() {
               onClick={() => setFormData({ ...formData, role: 'instructor' })}
               className={twMerge(
                 "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-200",
-                formData.role === 'instructor' 
-                  ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm" 
+                formData.role === 'instructor'
+                  ? "border-violet-500 bg-violet-50 text-violet-700 shadow-sm"
                   : "border-white/10 bg-[#151518]/50 text-slate-400 hover:border-violet-200 hover:bg-[#151518]"
               )}
             >
@@ -167,6 +167,7 @@ export default function Register() {
             )}
           </button>
         </form>
+
 
         <p className="mt-8 text-center text-sm text-slate-400 font-medium">
           Already have an account?{' '}
