@@ -78,6 +78,7 @@ export const apiMethods = {
     return res.data;
   },
   createSection: async (courseId: string, data: any) => {
+    console.log(courseId)
     // const res = await api.post(`/content/courses/${courseId}/sections`, data);
     const res = await api.post(`/content/sections`, data);
 
