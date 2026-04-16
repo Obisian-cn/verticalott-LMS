@@ -1,11 +1,9 @@
-name: Deploy Frontend to Azure VM
+name: Deploy Pipeline
 
 on:
   push:
     branches:
       - dev
-    paths:
-      - 'frontend/**'
   workflow_dispatch:
 
 jobs:
@@ -23,18 +21,13 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            # Navigate to the frontend directory on your VM
-            cd ~/verticalott-LMS/frontend
+            # Navigate to the single root workflow structure 
+            cd ~/verticalott-LMS
             
-            # Force pull the latest frontend code from the dev branch without merging issues
+            # Fetch and overwrite to fix any divergent branch conflicts on the VM
             git fetch origin dev
             git reset --hard origin/dev
             
-            # Build the new Nginx+Vite docker image
-            docker compose build
-
-            # Stop the existing local container
+            # Rebuild and redeploy cleanly in one hit
             docker compose down
-            
-            # Re-initialize the frontend application mapping cleanly
-            docker compose up -d
+            docker compose up -d --build
