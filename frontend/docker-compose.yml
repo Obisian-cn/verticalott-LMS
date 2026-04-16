@@ -1,0 +1,9 @@
+services:
+  frontend:
+    build: .
+    image: lms-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - .env

@@ -1,9 +1,7 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: lms
       POSTGRES_PASSWORD: lms_password
@@ -15,17 +13,19 @@ services:
 
   redis:
     image: redis:7
-    restart: always
+    restart: unless-stopped
     ports:
       - "6379:6379"
 
   api-gateway:
-    build: ./api-gateway
-    command: ["node", "dist/main.js"]
+    build: .
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/api-gateway/main.js"]
     ports:
       - "3000:3000"
     env_file:
-      - ./api-gateway/.env
+      - .env
     depends_on:
       - auth-service
       - user-service
@@ -37,108 +37,123 @@ services:
       - progress-service
       - review-service
       - notification-service
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   auth-service:
-    build: ./auth-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/auth-service/main.js"]
     ports:
       - "3001:3001"
     env_file:
-      - ./auth-service/.env
+      - .env
     depends_on:
       - postgres
       - redis
 
   user-service:
-    build: ./user-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/user-service/main.js"]
     ports:
       - "3002:3002"
     env_file:
-      - ./user-service/.env
+      - .env
     depends_on:
       - postgres
 
   course-service:
-    build: ./course-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/course-service/main.js"]
     ports:
       - "3003:3003"
     env_file:
-      - ./course-service/.env
+      - .env
     depends_on:
       - postgres
 
   content-service:
-    build: ./content-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/content-service/main.js"]
     ports:
       - "3004:3004"
     env_file:
-      - ./content-service/.env
+      - .env
     depends_on:
       - postgres
 
   video-service:
-    build: ./video-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/video-service/main.js"]
     ports:
       - "3005:3005"
     env_file:
-      - ./video-service/.env
+      - .env
     depends_on:
       - postgres
 
   enrollment-service:
-    build: ./enrollment-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/enrollment-service/main.js"]
     ports:
       - "3006:3006"
     env_file:
-      - ./enrollment-service/.env
+      - .env
     depends_on:
       - postgres
 
   payment-service:
-    build: ./payment-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/payment-service/main.js"]
     ports:
       - "3007:3007"
     env_file:
-      - ./payment-service/.env
+      - .env
     depends_on:
       - postgres
 
   progress-service:
-    build: ./progress-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/progress-service/main.js"]
     ports:
       - "3008:3008"
     env_file:
-      - ./progress-service/.env
+      - .env
     depends_on:
       - postgres
 
   review-service:
-    build: ./review-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/review-service/main.js"]
     ports:
       - "3009:3009"
     env_file:
-      - ./review-service/.env
+      - .env
     depends_on:
       - postgres
 
   notification-service:
-    build: ./notification-service
-    command: ["node", "dist/main.js"]
+    image: lms-backend
+    restart: unless-stopped
+    command: ["node", "dist/notification-service/main.js"]
     ports:
       - "3010:3010"
     env_file:
-      - ./notification-service/.env
+      - .env
     depends_on:
       - postgres
 
 volumes:
   postgres_data:
-
