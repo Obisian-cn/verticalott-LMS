@@ -53,10 +53,9 @@ export default function CourseDetails() {
     );
   }
 
-
   const course = courseData?.data || {};
   const sections = contentData?.data || [];
-  
+
   // Aggregate stats
   const totalLessons = sections.reduce((acc: number, section: any) => acc + (section.lessons?.length || 0), 0);
 
@@ -65,7 +64,7 @@ export default function CourseDetails() {
       {/* Hero Section */}
       <div className="glass rounded-[2rem] p-8 sm:p-10 relative overflow-hidden flex flex-col items-start bg-slate-900 text-white">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-bl from-teal-500/20 to-blue-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
-        
+
         <div className="relative z-10 w-full max-w-4xl flex flex-col md:flex-row gap-8 items-start">
           <div className="flex-1 space-y-6">
             <div className="flex items-center gap-3 space-x-2">
@@ -77,15 +76,15 @@ export default function CourseDetails() {
                 4.8 Rating
               </span>
             </div>
-            
+
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
               {course.title}
             </h1>
-            
+
             <p className="text-lg text-slate-300 leading-relaxed opacity-90">
               {course.description}
             </p>
-            
+
             <div className="flex flex-wrap items-center gap-6 pt-4 text-slate-300">
               <div className="flex items-center">
                 <Users className="w-5 h-5 mr-2 text-teal-400" />
@@ -100,7 +99,7 @@ export default function CourseDetails() {
                 <span>{totalLessons} Lessons</span>
               </div>
             </div>
-            
+
             <div className="flex items-center pt-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full border-2 border-white/20 bg-gradient-to-tr from-teal-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
@@ -113,7 +112,7 @@ export default function CourseDetails() {
               </div>
             </div>
           </div>
-          
+
           <div className="w-full md:w-80 shrink-0">
             <div className="bg-[#151518]/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
@@ -122,7 +121,7 @@ export default function CourseDetails() {
                 <div className="text-4xl font-extrabold text-white mb-6">
                   ${course.price || '49.99'}
                 </div>
-                
+
                 <button
                   onClick={() => paymentMutation.mutate(Number(course.price || 49.99))}
                   disabled={paymentMutation.isPending || enrollMutation.isPending}
@@ -130,7 +129,7 @@ export default function CourseDetails() {
                 >
                   {paymentMutation.isPending || enrollMutation.isPending ? 'Processing...' : 'Enroll Now'}
                 </button>
-                
+
                 <ul className="mt-6 space-y-3">
                   <li className="flex items-start gap-3 text-sm text-slate-300">
                     <CheckCircle2 className="w-5 h-5 text-teal-400 shrink-0" />
@@ -163,7 +162,7 @@ export default function CourseDetails() {
                   </h3>
                   <span className="text-sm font-medium text-slate-400 bg-white/5 px-3 py-1 rounded-full">{section.lessons?.length || 0} lessons</span>
                 </div>
-                
+
                 <div className="space-y-3 pl-11">
                   {section.lessons && section.lessons.length > 0 ? (
                     section.lessons.sort((a: any, b: any) => a.order - b.order).map((lesson: any) => (
