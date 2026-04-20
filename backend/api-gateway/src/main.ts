@@ -12,7 +12,13 @@ import { logger, AppError, fail } from "@lms/common";
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: [
+    "https://playstori.southindia.cloudapp.azure.com"
+  ],
+  credentials: true
+}));
 
 // We remove express.json() here because it interferes with http-proxy-middleware for POST/PUT requests
 // The individual services will parse the JSON bodies.
