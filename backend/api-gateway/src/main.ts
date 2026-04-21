@@ -11,19 +11,18 @@ import { logger, AppError, fail } from "@lms/common";
 
 const app = express();
 
-app.use(helmet());
-// app.use(cors());
-// app.use(cors({
-//   origin: [
-//     "https://playstori.southindia.cloudapp.azure.com",
-//     "http://localhost:5173"
-//   ],
-//   credentials: true
-// }));
-
 app.use(cors({
-  origin: true,
-  credentials: true
+  origin: ['http://localhost:5173', 'https://playstori.southindia.cloudapp.azure.com'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors()); // ← preflight handler BEFORE helmet
+
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
 }));
 
 // We remove express.json() here because it interferes with http-proxy-middleware for POST/PUT requests
