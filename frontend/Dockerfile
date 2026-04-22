@@ -10,6 +10,9 @@ RUN npm ci
 # Copy the rest of the project
 COPY . .
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the project for production
 RUN npm run build
 
