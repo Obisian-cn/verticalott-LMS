@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 // Pages
@@ -19,7 +19,7 @@ import PaymentSuccess from './pages/PaymentSuccess';
 
 const PrivateRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
@@ -33,35 +33,36 @@ const PublicRoutes = () => {
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Routes>
-            <Route element={<PublicRoutes />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
-            
-            <Route element={<PrivateRoutes />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/courses/:id" element={<CourseDetails />} />
-              <Route path="/learn/:courseId" element={<CoursePlayer />} />
-              <Route path="/payment/success" element={<PaymentSuccess />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/courses" element={<AdminCoursesList />} />
-              <Route path="/admin/courses/create" element={<AdminCourseCreate />} />
-              <Route path="/admin/courses/:id/edit" element={<AdminCourseEdit />} />
-              <Route path="/admin/courses/:courseId/builder" element={<AdminCourseBuilder />} />
-            </Route>
-            
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-          </Routes>
+    // <Router>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Routes>
+          <Route element={<PublicRoutes />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
 
-        </main>
-      </div>
-    </Router>
+          <Route element={<PrivateRoutes />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetails />} />
+            <Route path="/learn/:courseId" element={<CoursePlayer />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/courses" element={<AdminCoursesList />} />
+            <Route path="/admin/courses/create" element={<AdminCourseCreate />} />
+            <Route path="/admin/courses/:id/edit" element={<AdminCourseEdit />} />
+            <Route path="/admin/courses/:courseId/builder" element={<AdminCourseBuilder />} />
+          </Route>
+
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+
+      </main>
+    </div>
+    // </Router>
   );
 }
 
