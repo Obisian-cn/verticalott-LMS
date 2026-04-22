@@ -20,6 +20,7 @@ export class VideoService {
 
       // 1) Stream upload to Mux
       try {
+        console.log("Uploading video to Mux------->");
         const { playbackId, assetId } = await muxService.uploadVideo(filePath);
         videoPlaybackId = playbackId;
         videoUrl = muxService.getPlaybackUrl(playbackId);
