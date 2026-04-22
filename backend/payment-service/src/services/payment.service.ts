@@ -39,30 +39,30 @@ export class PaymentService {
         customer_name: user.name || "User",
       },
       order_meta: {
-        return_url: `${data.returnUrl || 'http://localhost:5173/payment/success'}?order_id={order_id}`,
+        return_url: `${data.returnUrl || 'https://playstori.southindia.cloudapp.azure.com/lms-fre/payment/success'}?order_id={order_id}`,
         notify_url: config.cashfree.webhookUrl,
       }
     };
 
     try {
-        const response = await axios.post(`${CASHFREE_API}/orders`, requestBody, {
-          headers: {
-            "x-client-id": config.cashfree.appId,
-            "x-client-secret": config.cashfree.secretKey,
-            "x-api-version": "2023-08-01",
-            "Content-Type": "application/json"
-          }
-        });
-        
-        return {
-          paymentId: payment.id,
-          orderId,
-          paymentSessionId: response.data.payment_session_id,
-          status: payment.status
-        };
+      const response = await axios.post(`${CASHFREE_API}/orders`, requestBody, {
+        headers: {
+          "x-client-id": config.cashfree.appId,
+          "x-client-secret": config.cashfree.secretKey,
+          "x-api-version": "2023-08-01",
+          "Content-Type": "application/json"
+        }
+      });
+
+      return {
+        paymentId: payment.id,
+        orderId,
+        paymentSessionId: response.data.payment_session_id,
+        status: payment.status
+      };
     } catch (e: any) {
-        console.error("Cashfree ERror", e.response?.data || e.message);
-        throw new AppError("Payment gateway error", 500);
+      console.error("Cashfree ERror", e.response?.data || e.message);
+      throw new AppError("Payment gateway error", 500);
     }
   }
 
