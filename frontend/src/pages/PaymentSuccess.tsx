@@ -29,6 +29,10 @@ export default function PaymentSuccess() {
     // ← wait for auth to finish loading
     if (authLoading) return;
 
+    console.log("orderId------->", orderId);
+    console.log("courseId------->", courseId);
+    console.log("isAuthenticated------->", isAuthenticated);
+
     if (!isAuthenticated) {
       navigate('/login');
       return;
