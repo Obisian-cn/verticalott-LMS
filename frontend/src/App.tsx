@@ -55,8 +55,8 @@ function App() {
             <Route path="/admin/courses/:courseId/builder" element={<AdminCourseBuilder />} />
           </Route>
 
-          <Route path="/" element={<Navigate to="/lms-fre/dashboard" />} />
-          <Route path="*" element={<Navigate to="/lms-fre/login" />} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
 
       </main>
