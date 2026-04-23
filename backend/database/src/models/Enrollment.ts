@@ -7,6 +7,8 @@ export interface EnrollmentAttributes {
   id: string;
   userId: string;
   courseId: string;
+  paymentId: string;
+  status: "active" | "inactive" | "cancelled";
   enrolledAt: Date;
 }
 
@@ -14,11 +16,12 @@ type EnrollmentCreationAttributes = Optional<EnrollmentAttributes, "id" | "enrol
 
 export class Enrollment
   extends Model<EnrollmentAttributes, EnrollmentCreationAttributes>
-  implements EnrollmentAttributes
-{
+  implements EnrollmentAttributes {
   public id!: string;
   public userId!: string;
   public courseId!: string;
+  public paymentId!: string;
+  public status!: "active" | "inactive" | "cancelled";
   public enrolledAt!: Date;
 }
 
@@ -35,6 +38,15 @@ Enrollment.init(
     },
     courseId: {
       type: DataTypes.UUID,
+      allowNull: false
+    },
+    paymentId: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
+    status: {
+      type: DataTypes.ENUM("active", "inactive", "cancelled"),
+      defaultValue: "active",
       allowNull: false
     },
     enrolledAt: {

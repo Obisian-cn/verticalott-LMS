@@ -1,5 +1,5 @@
 import { Payment } from "../models";
-import { Course, User } from "@lms/database";
+import { Course, Enrollment, User } from "@lms/database";
 import { AppError } from "../utils/AppError";
 import axios from "axios";
 import { config } from "../config";
@@ -87,13 +87,32 @@ export class PaymentService {
   }
 
   public async handleWebhook(paymentId: string, status: "completed" | "failed") {
-    // If we use order_id from cashfree it will be like order_<paymentId>
-    const id = paymentId.startsWith("order_") ? paymentId.split("_")[1] : paymentId;
+    const id = paymentId.replace("order_", ""); // ← fix UUID parsing
     const payment = await Payment.findByPk(id);
     if (!payment) throw new AppError("Payment not found", 404);
 
     payment.status = status;
     await payment.save();
+
+    if (status === "completed") {
+      try {
+        await Enrollment.findOrCreate({
+          where: {
+            userId: payment.userId,
+            courseId: payment.courseId,
+          },
+          defaults: {
+            userId: payment.userId,
+            courseId: payment.courseId,
+            paymentId: payment.id,
+            status: "active",
+            enrolledAt: new Date(),
+          }
+        });
+      } catch (err: any) {
+        console.error("Enrollment creation failed", err.message);
+      }
+    }
 
     return payment;
   }
