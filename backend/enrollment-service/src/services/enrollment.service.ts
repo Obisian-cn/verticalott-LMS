@@ -13,7 +13,9 @@ export class EnrollmentService {
       const enrollment = await Enrollment.create({
         userId,
         courseId,
-        // paymentId
+        paymentId,
+        status: "active",
+        enrolledAt: new Date(),
       });
 
       return enrollment;
@@ -28,8 +30,8 @@ export class EnrollmentService {
     try {
       const enrollments = await Enrollment.findAll({
         where: { userId },
-        include: [{ 
-          model: Course, 
+        include: [{
+          model: Course,
           as: "course",
           include: [{
             model: Section,
@@ -41,11 +43,11 @@ export class EnrollmentService {
           }]
         }],
       });
-      
+
       const enrichedEnrollments = await Promise.all(enrollments.map(async (enrollment: any) => {
         const enrollmentJSON = enrollment.toJSON();
         const course = enrollmentJSON.course;
-        
+
         const videoIds = new Set<string>();
 
         if (course && course.sections) {
@@ -71,7 +73,7 @@ export class EnrollmentService {
               videoId: Array.from(videoIds)
             }
           });
-          
+
           completedVideos = userProgresses.filter((p: any) => p.completed).length;
           progressPercent = (completedVideos / totalVideos) * 100;
         }

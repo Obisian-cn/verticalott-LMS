@@ -7,12 +7,12 @@ export interface EnrollmentAttributes {
   id: string;
   userId: string;
   courseId: string;
-  paymentId: string;
+  paymentId?: string | null;
   status: "active" | "inactive" | "cancelled";
   enrolledAt: Date;
 }
 
-type EnrollmentCreationAttributes = Optional<EnrollmentAttributes, "id" | "enrolledAt">;
+type EnrollmentCreationAttributes = Optional<EnrollmentAttributes, "id" | "enrolledAt" | "paymentId">;
 
 export class Enrollment
   extends Model<EnrollmentAttributes, EnrollmentCreationAttributes>
@@ -20,7 +20,7 @@ export class Enrollment
   public id!: string;
   public userId!: string;
   public courseId!: string;
-  public paymentId!: string;
+  public paymentId!: string | null;
   public status!: "active" | "inactive" | "cancelled";
   public enrolledAt!: Date;
 }
