@@ -44,7 +44,7 @@ sequelize
   .then(() => {
     logger.info("Database connected successfully");
     // We assume the db schema is managed elsewhere or sync is ok
-    return sequelize.sync();
+    return sequelize.sync({ alter: true });
   })
   .then(() => {
     app.listen(port, () => {
