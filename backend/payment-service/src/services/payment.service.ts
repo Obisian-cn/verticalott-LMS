@@ -14,7 +14,15 @@ export class PaymentService {
     const course = await Course.findByPk(data.courseId);
     if (!course) throw new AppError("Course not found", 404);
 
-    const amount = data.amount || course.price || 1;
+    const rawAmount = data.amount || course.price || 0;
+    const amount = parseFloat(Number(rawAmount).toFixed(2));
+    console.log("amount------->", amount, typeof amount);
+    console.log("course.price------->", course.price, typeof course.price);
+    console.log("data.amount------->", data.amount, typeof data.amount);
+
+    if (!amount || amount <= 0) {
+      throw new AppError("Invalid course price", 400);
+    }
     const currency = data.currency || "INR"; // Default to INR for Cashfree
 
     const payment = await Payment.create({
