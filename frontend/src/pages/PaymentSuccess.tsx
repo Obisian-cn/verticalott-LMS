@@ -26,6 +26,14 @@ export default function PaymentSuccess() {
   });
 
   useEffect(() => {
+    console.log("=== PaymentSuccess useEffect triggered ===");
+    console.log("authLoading:", authLoading);
+    console.log("isAuthenticated:", isAuthenticated);
+    console.log("orderId:", orderId);
+    console.log("courseId:", courseId);
+    console.log("token in localStorage:", localStorage.getItem('token'));
+    console.log("refreshToken in localStorage:", localStorage.getItem('refreshToken'));
+    debugger
     // ← wait for auth to finish loading
     if (authLoading) return;
 
