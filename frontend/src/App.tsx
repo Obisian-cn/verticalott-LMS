@@ -19,6 +19,9 @@ import PaymentSuccess from './pages/PaymentSuccess';
 const PrivateRoutes = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  console.log("=== PrivateRoutes ===", { isAuthenticated, isLoading });
+  debugger; // ← freeze here
+
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
