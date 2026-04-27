@@ -52,6 +52,9 @@ export class PaymentService {
       }
     };
 
+    console.log("return_url------->", data.returnUrl);
+    console.log("full return_url------->", `${data.returnUrl || 'https://playstori.southindia.cloudapp.azure.com/lms-fre/payment/success'}?order_id={order_id}`);
+
     try {
       const response = await axios.post(`${CASHFREE_API}/orders`, requestBody, {
         headers: {
