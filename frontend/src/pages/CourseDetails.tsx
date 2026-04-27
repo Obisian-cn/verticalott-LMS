@@ -3,10 +3,18 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import { BookOpen, Star, Clock, Users, CheckCircle2, PlayCircle } from 'lucide-react';
 import { load } from '@cashfreepayments/cashfree-js';
+import { useAuth } from '../context/AuthContext';
 
 export default function CourseDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const { data: enrollmentsData } = useQuery({
+    queryKey: ['enrollments', user?.id],
+    queryFn: () => apiMethods.getEnrollments(user!.id),
+    enabled: !!user?.id
+  });
 
   const { data: courseData, isLoading: courseLoading } = useQuery({
     queryKey: ['course', id],
@@ -55,6 +63,7 @@ export default function CourseDetails() {
 
   const course = courseData?.data || {};
   const sections = contentData?.data || [];
+  const isEnrolled = enrollmentsData?.data?.some((e: any) => e.courseId === id);
 
   // Aggregate stats
   const totalLessons = sections.reduce((acc: number, section: any) => acc + (section.lessons?.length || 0), 0);
@@ -119,16 +128,25 @@ export default function CourseDetails() {
               <div className="relative z-10 flex flex-col">
                 <p className="text-sm font-medium text-slate-300 uppercase tracking-wider mb-2">Full Lifetime Access</p>
                 <div className="text-4xl font-extrabold text-white mb-6">
-                  ${course.price || '49.99'}
+                  ₹{course.price || '49.99'}
                 </div>
 
-                <button
-                  onClick={() => paymentMutation.mutate(Number(course.price || 49.99))}
-                  disabled={paymentMutation.isPending || enrollMutation.isPending}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-lg shadow-lg hover:shadow-teal-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center"
-                >
-                  {paymentMutation.isPending || enrollMutation.isPending ? 'Processing...' : 'Enroll Now'}
-                </button>
+                {isEnrolled ? (
+                  <button
+                    onClick={() => navigate(`/learn/${id}`)}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold text-sm shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center text-center"
+                  >
+                    You already enrolled in the course. Go to Course
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => paymentMutation.mutate(Number(course.price || 49.99))}
+                    disabled={paymentMutation.isPending || enrollMutation.isPending}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-lg shadow-lg hover:shadow-teal-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:hover:scale-100 flex items-center justify-center"
+                  >
+                    {paymentMutation.isPending || enrollMutation.isPending ? 'Processing...' : 'Enroll Now'}
+                  </button>
+                )}
 
                 <ul className="mt-6 space-y-3">
                   <li className="flex items-start gap-3 text-sm text-slate-300">
