@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
@@ -29,7 +29,12 @@ export default function PaymentSuccess() {
     }
   });
 
+  const hasAttempted = useRef(false);
+
   useEffect(() => {
+    if (hasAttempted.current) return;
+    hasAttempted.current = true;
+
     if (orderId && courseId) {
       enrollMutation.mutate();
     } else {
