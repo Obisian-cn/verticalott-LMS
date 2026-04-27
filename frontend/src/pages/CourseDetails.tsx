@@ -36,7 +36,7 @@ export default function CourseDetails() {
       });
       cashfree.checkout({
         paymentSessionId: data.data?.paymentSessionId || data.paymentSessionId,
-        returnUrl: `${window.location.origin}/payment/success?order_id={order_id}`
+        returnUrl: `${window.location.origin}/lms-fre/payment/success?order_id={order_id}`
       });
     },
     onError: (error) => {
