@@ -50,7 +50,6 @@ function App() {
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetails />} />
             <Route path="/learn/:courseId" element={<CoursePlayer />} />
-            <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/courses" element={<AdminCoursesList />} />
             <Route path="/admin/courses/create" element={<AdminCourseCreate />} />
@@ -58,6 +57,7 @@ function App() {
             <Route path="/admin/courses/:courseId/builder" element={<AdminCourseBuilder />} />
           </Route>
 
+          <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

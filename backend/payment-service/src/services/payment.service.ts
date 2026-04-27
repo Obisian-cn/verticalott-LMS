@@ -16,9 +16,6 @@ export class PaymentService {
 
     const rawAmount = data.amount || course.price || 0;
     const amount = parseFloat(Number(rawAmount).toFixed(2));
-    console.log("amount------->", amount, typeof amount);
-    console.log("course.price------->", course.price, typeof course.price);
-    console.log("data.amount------->", data.amount, typeof data.amount);
 
     if (!amount || amount <= 0) {
       throw new AppError("Invalid course price", 400);
@@ -51,9 +48,6 @@ export class PaymentService {
         notify_url: config.cashfree.webhookUrl,
       }
     };
-
-    console.log("return_url------->", data.returnUrl);
-    console.log("full return_url------->", `${data.returnUrl || 'https://playstori.southindia.cloudapp.azure.com/lms-fre/payment/success'}?order_id={order_id}`);
 
     try {
       const response = await axios.post(`${CASHFREE_API}/orders`, requestBody, {

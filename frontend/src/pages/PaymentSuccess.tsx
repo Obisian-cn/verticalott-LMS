@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { apiMethods } from '../lib/api';
 import { CheckCircle2, XCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<'processing' | 'success' | 'failed'>('processing');
-  const { isLoading: authLoading, isAuthenticated } = useAuth(); // ← add this
+  const [countdown, setCountdown] = useState(5);
 
   const orderId = searchParams.get('order_id');
   const courseId = localStorage.getItem('pending_enrollment_course_id');
@@ -20,40 +19,39 @@ export default function PaymentSuccess() {
       setStatus('success');
       localStorage.removeItem('pending_enrollment_course_id');
     },
-    onError: () => {
-      setStatus('failed');
+    onError: (error: any) => {
+      if (error?.response?.data?.message === 'Already enrolled in this course') {
+        setStatus('success');
+        localStorage.removeItem('pending_enrollment_course_id');
+      } else {
+        setStatus('failed');
+      }
     }
   });
 
   useEffect(() => {
-    console.log("=== PaymentSuccess useEffect triggered ===");
-    console.log("authLoading:", authLoading);
-    console.log("isAuthenticated:", isAuthenticated);
-    console.log("orderId:", orderId);
-    console.log("courseId:", courseId);
-    console.log("token in localStorage:", localStorage.getItem('token'));
-    console.log("refreshToken in localStorage:", localStorage.getItem('refreshToken'));
-    debugger
-    // ← wait for auth to finish loading
-    if (authLoading) return;
-
-    console.log("orderId------->", orderId);
-    console.log("courseId------->", courseId);
-    console.log("isAuthenticated------->", isAuthenticated);
-
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
     if (orderId && courseId) {
       enrollMutation.mutate();
     } else {
       setStatus('failed');
     }
-  }, [orderId, courseId, authLoading, isAuthenticated]); // ← add deps
+  }, [orderId, courseId]);
 
-
+  useEffect(() => {
+    if (status === 'success') {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate('/dashboard');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [status, navigate]);
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="glass rounded-3xl p-10 max-w-md w-full relative overflow-hidden bg-slate-900 border border-slate-700/50 shadow-2xl">
@@ -74,12 +72,13 @@ export default function PaymentSuccess() {
             </div>
             <h2 className="text-3xl font-extrabold text-white tracking-tight">Payment Successful!</h2>
             <p className="text-slate-300">You have been successfully enrolled in the course. You can now start learning.</p>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="mt-4 w-full py-3 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            <p className="text-sm text-slate-400 mt-2">Redirecting to dashboard in {countdown} seconds...</p>
+            <Link
+              to="/dashboard"
+              className="mt-4 w-full inline-block py-3 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               Go to Dashboard
-            </button>
+            </Link>
           </div>
         )}
 
@@ -90,12 +89,12 @@ export default function PaymentSuccess() {
             </div>
             <h2 className="text-3xl font-extrabold text-white tracking-tight">Enrollment Failed</h2>
             <p className="text-slate-300">We couldn't verify your payment or missing session details. Please try again or contact support.</p>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="mt-4 w-full py-3 px-6 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all border border-slate-700"
+            <Link
+              to="/dashboard"
+              className="mt-4 w-full inline-block py-3 px-6 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all border border-slate-700"
             >
               Return Home
-            </button>
+            </Link>
           </div>
         )}
       </div>

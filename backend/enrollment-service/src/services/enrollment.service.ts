@@ -8,7 +8,7 @@ export class EnrollmentService {
       if (!course) throw new AppError("Course not found", 404);
 
       const existing = await Enrollment.findOne({ where: { userId, courseId } });
-      if (existing) throw new AppError("Already enrolled in this course", 409);
+      if (existing) return existing;
 
       const enrollment = await Enrollment.create({
         userId,
